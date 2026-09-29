@@ -1413,7 +1413,7 @@ button { font: inherit; }
 .ss2-beat p{margin:0;font-size:.82rem;line-height:1.55;color:var(--color-text-muted)}
 .ss2-day-close{margin:.2rem 1.25rem 1.3rem;background:var(--color-laerche);border-radius:16px;padding:1.05rem 1.1rem;color:var(--color-text-on-dark);text-align:center}
 .ss2-day-close b{font-family:var(--font-heading);font-size:1.05rem;font-weight:400;line-height:1.35}
-.ss2-vidwrap{position:absolute;inset:0;overflow:hidden;background:#1c1812}
-.ss2-stage-video{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);border:0;pointer-events:none;max-width:none}
+.ss2-vidwrap{position:absolute;inset:0;overflow:hidden;background:#1c1812;container-type:size}.ss2-stage-iframe{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);border:0;pointer-events:none;max-width:none;width:max(100cqw,56.25cqh);height:max(100cqh,177.78cqw)}.ss2-stage-iframe.is-full{width:min(100cqw,56.25cqh);height:min(100cqh,177.78cqw)}
+.ss2-stage-video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;border:0;pointer-events:none;max-width:none;background:#1c1812}.ss2-stage-video.is-full{object-fit:contain}.ss2-stage-video::-webkit-media-controls{display:none!important}.ss2-stage-video::-webkit-media-controls-start-playback-button{display:none!important}
 .ss2-vidcover{position:absolute;inset:0;background-size:cover;background-repeat:no-repeat;background-position:center;background-color:#1c1812;transition:opacity .5s ease;pointer-events:none}
 .ss2-vidcover.gone{opacity:0}

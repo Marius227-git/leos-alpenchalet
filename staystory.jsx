@@ -29,40 +29,33 @@ const SS_APT = {
 };
 
 function SSVideo({ src, poster, full }) {
-  const wrapRef = React.useRef(null);
-  const [ar, setAr] = React.useState(9 / 16);
-  const [box, setBox] = React.useState(null);
+  const vRef = React.useRef(null);
   const [cover, setCover] = React.useState(true);
+  const [fallback, setFallback] = React.useState(false);
+  const m = src.match(/\/embed\/\d+\/([\w-]+)/);
+  const hls = m ? 'https://vz-824476f1-c1c.b-cdn.net/' + m[1] + '/playlist.m3u8' : src;
   React.useEffect(() => {
-    const t = setTimeout(() => setCover(false), 1800);
-    return () => clearTimeout(t);
-  }, [src]);
-  React.useEffect(() => {
-    if (!poster) return;
-    const i = new Image();
-    i.onload = () => { if (i.naturalWidth && i.naturalHeight) setAr(i.naturalWidth / i.naturalHeight); };
-    i.src = poster;
-  }, [poster]);
-  React.useEffect(() => {
-    const el = wrapRef.current;
-    if (!el) return;
-    const calc = () => {
-      const w = el.clientWidth, h = el.clientHeight;
-      if (!w || !h) return;
-      const cAR = w / h;
-      let bw, bh;
-      if (full) { if (cAR > ar) { bh = h; bw = h * ar; } else { bw = w; bh = w / ar; } }
-      else { if (cAR > ar) { bw = w; bh = w / ar; } else { bh = h; bw = h * ar; } }
-      setBox({ width: Math.ceil(bw) + 'px', height: Math.ceil(bh) + 'px' });
-    };
-    calc();
-    const ro = new ResizeObserver(calc);
-    ro.observe(el);
-    return () => ro.disconnect();
-  }, [ar, full]);
+    setFallback(false); setCover(true);
+    const v = vRef.current;
+    if (!v) return;
+    let h;
+    const fail = () => { if (h) { h.destroy(); h = null; } setFallback(true); setTimeout(() => setCover(false), 1800); };
+    v.addEventListener('error', fail);
+    v.muted = true; v.defaultMuted = true; v.playsInline = true;
+    const go = () => { const p = v.play(); if (p && p.catch) p.catch(() => {}); };
+    if (v.canPlayType('application/vnd.apple.mpegurl')) { v.src = hls; go(); }
+    else if (window.Hls && window.Hls.isSupported()) { h = new window.Hls({ capLevelToPlayerSize: true }); h.loadSource(hls); h.attachMedia(v); h.on(window.Hls.Events.MANIFEST_PARSED, go); h.on(window.Hls.Events.ERROR, (e, dt) => { if (dt.fatal) fail(); }); }
+    else fail();
+    const onPlay = () => setCover(false);
+    v.addEventListener('playing', onPlay);
+    const retry = () => { if (v.paused) go(); };
+    document.addEventListener('touchstart', retry, { once: true, passive: true });
+    return () => { v.removeEventListener('playing', onPlay); v.removeEventListener('error', fail); document.removeEventListener('touchstart', retry); if (h) h.destroy(); v.removeAttribute('src'); v.load(); };
+  }, [hls]);
   return (
-    <div className="ss2-vidwrap" ref={wrapRef}>
-      <iframe className="ss2-stage-video" src={src} loading="eager" allow="autoplay; encrypted-media" title="Video" tabIndex="-1" style={box}></iframe>
+    <div className="ss2-vidwrap">
+      {fallback && <iframe className={"ss2-stage-iframe" + (full ? " is-full" : "")} src={src + (src.includes('playsinline') ? '' : '&playsinline=true')} loading="eager" allow="autoplay; encrypted-media; fullscreen; picture-in-picture" title="Video" tabIndex="-1"></iframe>}
+      <video ref={vRef} style={fallback ? { display: 'none' } : null} className={"ss2-stage-video" + (full ? " is-full" : "")} muted autoPlay loop playsInline preload="auto" poster={poster} disablePictureInPicture disableRemotePlayback tabIndex="-1"></video>
       <div className={"ss2-vidcover" + (cover ? "" : " gone")} style={poster ? { backgroundImage: 'url(' + poster + ')' } : null}></div>
     </div>);
 }
