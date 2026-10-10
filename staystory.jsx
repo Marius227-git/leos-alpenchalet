@@ -410,15 +410,15 @@ function StayStoryApp({ onClose, initialMode }) {
     </div>);
 }
 
-function StayStoryOverlay() {
-  const [phase, setPhase] = React.useState(null);
-  const [initialMode, setInitialMode] = React.useState('unterkunft');
+function StayStoryOverlay({ initialOpen }) {
+  const [phase, setPhase] = React.useState(initialOpen ? 'intro' : null);
+  const [initialMode, setInitialMode] = React.useState(initialOpen || 'unterkunft');
   React.useEffect(() => {
     const open = (e) => { setInitialMode(e.detail?.mode || 'unterkunft'); setPhase('intro'); };
     const key = (e) => { if (e.key === 'Escape') { setPhase(null); if (window.parent !== window) window.parent.postMessage('staystory:closed', '*'); } };
     window.addEventListener('staystory:open', open);
     window.addEventListener('keydown', key);
-    if (window.location.hash === '#staystory-tag') {
+    if (!initialOpen && window.location.hash === '#staystory-tag') {
       setInitialMode('tag');
       setPhase('intro');
     }
