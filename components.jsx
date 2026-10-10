@@ -658,12 +658,6 @@ function openStayStory(eye, title, mode) {
   window.dispatchEvent(new CustomEvent('staystory:open', { detail: { eye, title, mode } }));
 }
 
-React.useEffect(() => {
-  if (window.location.hash === '#staystory-tag') {
-    setTimeout(() => openStayStory('Ihr Tag', 'So fühlt sich ein Tag bei uns an', 'tag'), 300);
-  }
-}, []);
-
 function StayStoryTeaser() {
   return (
     <section className="ss-teaser" id="staystory" onClick={() => openStayStory('Dein Tag', 'So fühlt sich ein Tag bei uns an')}>

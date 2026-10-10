@@ -418,6 +418,10 @@ function StayStoryOverlay() {
     const key = (e) => { if (e.key === 'Escape') setPhase(null); };
     window.addEventListener('staystory:open', open);
     window.addEventListener('keydown', key);
+    if (window.location.hash === '#staystory-tag') {
+      setInitialMode('tag');
+      setPhase('intro');
+    }
     return () => { window.removeEventListener('staystory:open', open); window.removeEventListener('keydown', key); };
   }, []);
   React.useEffect(() => {
