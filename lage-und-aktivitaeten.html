@@ -73,7 +73,7 @@
     </div>
   </div>
 
-  <a href="index.html#staystory-tag" aria-label="Tag bei uns erleben — digitale Hausführung öffnen" style="position: fixed; right: 1.2rem; bottom: 1.2rem; z-index: 1000; display: flex; align-items: center; gap: 0.7rem; background: var(--color-laerche); color: var(--color-text-on-dark); padding: 0.5rem 1.05rem 0.5rem 0.5rem; border-radius: 34px; box-shadow: 0 12px 30px rgba(28,24,18,0.4); text-decoration: none; font-family: var(--font-body); transform: {{ pillTf }}; opacity: {{ pillOp }}; pointer-events: {{ pillPE }}; transition: transform 0.5s cubic-bezier(.2,.8,.2,1), opacity 0.5s;">
+  <button onclick="openTagErleben()" aria-label="Tag bei uns erleben — digitale Hausführung öffnen" style="position: fixed; right: 1.2rem; bottom: 1.2rem; z-index: 1000; display: flex; align-items: center; gap: 0.7rem; background: var(--color-laerche); color: var(--color-text-on-dark); padding: 0.5rem 1.05rem 0.5rem 0.5rem; border-radius: 34px; box-shadow: 0 12px 30px rgba(28,24,18,0.4); border: none; cursor: pointer; font-family: var(--font-body); transform: {{ pillTf }}; opacity: {{ pillOp }}; pointer-events: {{ pillPE }}; transition: transform 0.5s cubic-bezier(.2,.8,.2,1), opacity 0.5s;">
     <span style="position: relative; width: 42px; height: 42px; border-radius: 50%; overflow: hidden; flex: 0 0 auto; border: 2px solid rgba(244,239,230,0.5); background: linear-gradient(180deg, #e7b078 0%, #f0d9b2 55%, #f4ecd9 100%);">
       <span style="position: absolute; top: 20%; left: 58%; width: 22px; height: 22px; border-radius: 50%; background: radial-gradient(circle, #fbeec6, #f3d9a6); box-shadow: 0 0 24px 8px rgba(243,217,166,0.5);"></span>
       <span style="position: absolute; left: 0; bottom: 0; display: flex; width: 200%; height: 74%; animation: ss-pan 40s linear infinite;">
@@ -87,7 +87,31 @@
       <span style="font-size: 0.78rem; color: rgba(244,239,230,0.8); line-height: 1.2;">Digitale Hausführung</span>
     </span>
     <span style="color: #A8C617; font-size: 1.1rem;">→</span>
-  </a>
+  </button>
+
+  <div id="ss-overlay" style="display:none; position:fixed; inset:0; z-index:9000; background:#1a1612;">
+    <iframe id="ss-iframe" src="" style="width:100%; height:100%; border:none; display:block;"></iframe>
+  </div>
+
+  <script>
+    function openTagErleben() {
+      var ov = document.getElementById('ss-overlay');
+      var fr = document.getElementById('ss-iframe');
+      fr.src = 'index.html#staystory-tag';
+      ov.style.display = 'block';
+      document.body.style.overflow = 'hidden';
+    }
+    function closeTagErleben() {
+      var ov = document.getElementById('ss-overlay');
+      var fr = document.getElementById('ss-iframe');
+      ov.style.display = 'none';
+      fr.src = '';
+      document.body.style.overflow = '';
+    }
+    window.addEventListener('message', function(e) {
+      if (e.data === 'staystory:closed') closeTagErleben();
+    });
+  </script>
 
   <section id="lage" data-screen-label="01 Lage Intro" style="padding: clamp(4rem, 8vw, 7rem) 0 3rem;">
     <div style="max-width: 1400px; margin: 0 auto; padding: 0 clamp(1.5rem, 4vw, 3rem); display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 420px), 1fr)); gap: 2rem 4rem; align-items: end;">

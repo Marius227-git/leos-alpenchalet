@@ -415,7 +415,7 @@ function StayStoryOverlay() {
   const [initialMode, setInitialMode] = React.useState('unterkunft');
   React.useEffect(() => {
     const open = (e) => { setInitialMode(e.detail?.mode || 'unterkunft'); setPhase('intro'); };
-    const key = (e) => { if (e.key === 'Escape') setPhase(null); };
+    const key = (e) => { if (e.key === 'Escape') { setPhase(null); if (window.parent !== window) window.parent.postMessage('staystory:closed', '*'); } };
     window.addEventListener('staystory:open', open);
     window.addEventListener('keydown', key);
     if (window.location.hash === '#staystory-tag') {
@@ -428,11 +428,15 @@ function StayStoryOverlay() {
     document.body.style.overflow = phase ? 'hidden' : '';
     return () => { document.body.style.overflow = ''; };
   }, [phase]);
+  const close = () => {
+    setPhase(null);
+    if (window.parent !== window) window.parent.postMessage('staystory:closed', '*');
+  };
   if (!phase) return null;
   return (
     <div className="ss2-ov">
       <div className="ss2-phone">
-        {phase === 'intro' ? <StayStoryIntro onDone={() => setPhase('app')} /> : <StayStoryApp onClose={() => setPhase(null)} initialMode={initialMode} />}
+        {phase === 'intro' ? <StayStoryIntro onDone={() => setPhase('app')} /> : <StayStoryApp onClose={close} initialMode={initialMode} />}
       </div>
     </div>);
 }
