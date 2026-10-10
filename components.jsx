@@ -654,9 +654,15 @@ const StayPano = ({ frontFill = "#4A5D3A", backFill = "#9aa890" }) => (
   </div>
 );
 
-function openStayStory(eye, title) {
-  window.dispatchEvent(new CustomEvent('staystory:open', { detail: { eye, title } }));
+function openStayStory(eye, title, mode) {
+  window.dispatchEvent(new CustomEvent('staystory:open', { detail: { eye, title, mode } }));
 }
+
+React.useEffect(() => {
+  if (window.location.hash === '#staystory-tag') {
+    setTimeout(() => openStayStory('Ihr Tag', 'So fühlt sich ein Tag bei uns an', 'tag'), 300);
+  }
+}, []);
 
 function StayStoryTeaser() {
   return (
