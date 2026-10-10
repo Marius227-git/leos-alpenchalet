@@ -715,29 +715,22 @@ class Component extends DCLogic {
 }
 </script>
 
-<div id="ss-overlay" style="display:none; position:fixed; inset:0; z-index:9000; background:#1a1612;">
-  <iframe id="ss-iframe" src="" style="width:100%; height:100%; border:none; display:block;"></iframe>
-</div>
+<div id="ss-root"></div>
+<script src="https://unpkg.com/react@18.3.1/umd/react.production.min.js" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.production.min.js" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/hls.js@1.5.15/dist/hls.min.js"></script>
+<script src="data.js"></script>
+<script type="text/babel" src="components.jsx"></script>
+<script type="text/babel" src="staystory.jsx"></script>
+<script type="text/babel">
+  ReactDOM.createRoot(document.getElementById('ss-root')).render(<StayStoryOverlay />);
+</script>
 <script>
-  function openTagErleben() {
-    var ov = document.getElementById('ss-overlay');
-    var fr = document.getElementById('ss-iframe');
-    fr.src = 'staystory-embed.html';
-    ov.style.display = 'block';
-    document.body.style.overflow = 'hidden';
-  }
-  function closeTagErleben() {
-    var ov = document.getElementById('ss-overlay');
-    var fr = document.getElementById('ss-iframe');
-    ov.style.display = 'none';
-    fr.src = '';
-    document.body.style.overflow = '';
-  }
-  window.addEventListener('message', function(e) {
-    if (e.data === 'staystory:closed') closeTagErleben();
-  });
   document.body.addEventListener('click', function(e) {
-    if (e.target.closest('[aria-label*="Tag bei uns erleben"]')) openTagErleben();
+    if (e.target.closest('[aria-label*="Tag bei uns erleben"]')) {
+      window.dispatchEvent(new CustomEvent('staystory:open', { detail: { mode: 'tag' } }));
+    }
   });
 </script>
 </body>
