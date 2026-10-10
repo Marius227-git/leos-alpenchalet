@@ -625,6 +625,13 @@ class Component extends DCLogic {
     if (!this.map) return;
     const p = POIS[this.season()][i];
     const m = this.markers[i];
+    if (window.innerWidth < 1040 && this.mapRef.current) {
+      const box = this.mapRef.current.parentElement || this.mapRef.current;
+      const r = box.getBoundingClientRect();
+      if (r.top < 80 || r.bottom > window.innerHeight) {
+        window.scrollTo({ top: window.scrollY + r.top - 86, behavior: 'smooth' });
+      }
+    }
     clearTimeout(this.tipT);
     (this.markers || []).forEach(x => { if (x && x !== m) x.closeTooltip(); });
     this.map.flyTo(p.home ? HOME : p.ll, 14, { duration: 0.6 });
