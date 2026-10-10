@@ -1,0 +1,710 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <title>Lage &amp; Aktivitäten — Leos Alpenchalet</title>
+  <link rel="stylesheet" href="_ds/leos-alpenchalet-design-system-019de8ea-7874-7a22-a92c-cf95d031c420/colors_and_type.css">
+  <link rel="stylesheet" href="_ds/leos-alpenchalet-design-system-019de8ea-7874-7a22-a92c-cf95d031c420/ui_kits/website/styles.css">
+  <script src="_ds/leos-alpenchalet-design-system-019de8ea-7874-7a22-a92c-cf95d031c420/_ds_bundle.js"></script>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script src="./image-slot.js"></script>
+  <style>
+    html, body { margin: 0; background: #F4EFE6; }
+    a { color: #7A5C3C; }
+    a:hover { color: #A8C617; }
+    .leaflet-container { font-family: "Source Sans 3", system-ui, sans-serif; background: #EDE5D6; }
+    
+    .leaflet-bar a { color: #2C2620 !important; background: #FAF8F2 !important; border-color: rgba(122,92,60,0.18) !important; }
+    .leaflet-bar { border: 1px solid rgba(122,92,60,0.18) !important; box-shadow: none !important; border-radius: 4px !important; }
+    .leaflet-control-attribution { background: rgba(244,239,230,0.85) !important; font-size: 10px; }
+    .leaflet-tooltip.la-tip { background: #2C2620; color: #F4EFE6; border: none; border-radius: 4px; box-shadow: 0 4px 12px rgba(44,38,32,0.15); font: 500 13px/1.3 "Source Sans 3", sans-serif; padding: 6px 10px; }
+    .leaflet-tooltip.la-tip::before { border-top-color: #2C2620; }
+    @keyframes ss-pan { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+  </style>
+</helmet>
+
+<div style="background: var(--color-altpapier); color: var(--color-text-primary); font-family: var(--font-body); min-height: 100vh;">
+
+  <header style="position: sticky; top: 0; z-index: 1200; height: 70px; background: {{ headerBg }}; backdrop-filter: {{ headerBlur }}; -webkit-backdrop-filter: {{ headerBlur }}; border-bottom: 1px solid {{ headerLine }}; transition: background 0.3s ease, border-color 0.3s ease;">
+    <div style="max-width: 1400px; margin: 0 auto; padding: 0 clamp(1.5rem, 4vw, 3rem); height: 100%; display: flex; align-items: center; justify-content: space-between; gap: 1.5rem;">
+      <a href="index.html#top" aria-label="Leos Alpenchalet" style="display: flex; align-items: center; text-decoration: none;">
+        <img src="assets/logo-leos-alpenchalet.png" alt="Leos Alpenchalet" style="height: 44px; width: auto; display: block; filter: {{ logoFilter }}; transition: filter 0.3s ease;">
+      </a>
+      <sc-if value="{{ showNav }}" hint-placeholder-val="{{ true }}">
+        <nav style="display: flex; align-items: center; gap: 2.4rem;">
+          <a href="index.html#wohnungen" style="color: var(--color-text-primary); text-decoration: none; font-size: 0.97rem; transition: color 0.15s;" style-hover="color: #A8C617;">Wohnen</a>
+          <a href="lage-und-aktivitaeten.html" aria-current="page" style="color: var(--color-text-primary); text-decoration: none; font-size: 0.97rem; border-bottom: 1px solid #A8C617; padding-bottom: 2px; transition: color 0.15s;" style-hover="color: #A8C617;">Lage &amp; Aktivitäten</a>
+          <a href="index.html#lage" style="color: var(--color-text-primary); text-decoration: none; font-size: 0.97rem; transition: color 0.15s;" style-hover="color: #A8C617;">Kontakt</a>
+          <a href="https://leos-alpenchalet.tramino.de/api/widgets/booking/" target="_blank" rel="noopener" style="background: #A8C617; color: #1a1612; padding: 0.6rem 1.2rem; border-radius: 4px; font-weight: 500; font-size: 0.93rem; text-decoration: none; transition: background 0.15s;" style-hover="background: #93AD12; color: #1a1612;">Buchen</a>
+        </nav>
+      </sc-if>
+      <sc-if value="{{ isMobile }}" hint-placeholder-val="{{ false }}">
+        <button type="button" onClick="{{ toggleMenu }}" aria-label="{{ menuLabel }}" style="width: 44px; height: 44px; background: transparent; border: 0; padding: 0; cursor: pointer; position: relative; margin-left: auto; transform: {{ burgerRot }}; transition: transform 0.55s cubic-bezier(.65,.05,.36,1);">
+          <span style="position: absolute; left: 10px; right: 10px; height: 2px; border-radius: 2px; top: {{ l1Top }}; transform: {{ l1Tf }}; background: {{ lineColor }}; transition: top 0.3s cubic-bezier(.65,.05,.36,1), transform 0.45s cubic-bezier(.65,.05,.36,1), background 0.3s;"></span>
+          <span style="position: absolute; left: 10px; right: 10px; height: 2px; border-radius: 2px; top: 21px; opacity: {{ l2Op }}; background: {{ lineColor }}; transition: opacity 0.25s ease, background 0.3s;"></span>
+          <span style="position: absolute; left: 10px; right: 10px; height: 2px; border-radius: 2px; top: {{ l3Top }}; transform: {{ l3Tf }}; background: {{ lineColor }}; transition: top 0.3s cubic-bezier(.65,.05,.36,1), transform 0.45s cubic-bezier(.65,.05,.36,1), background 0.3s;"></span>
+        </button>
+      </sc-if>
+    </div>
+  </header>
+
+  <div role="dialog" aria-modal="true" aria-label="Hauptmenü" style="position: fixed; inset: 0; z-index: 1100; background: linear-gradient(155deg, #2a241d 0%, #1a1612 100%); color: #F4EFE6; display: flex; flex-direction: column; clip-path: {{ menuClip }}; -webkit-clip-path: {{ menuClip }}; pointer-events: {{ menuPE }}; transition: clip-path 0.5s cubic-bezier(.77,0,.18,1), -webkit-clip-path 0.5s cubic-bezier(.77,0,.18,1);">
+    <div style="flex: 1; display: flex; flex-direction: column; padding: 90px 1.8rem 2rem;">
+      <nav style="flex: 1; display: flex; flex-direction: column; justify-content: center; gap: 0.4rem;">
+        <sc-for list="{{ menuLinks }}" as="m" hint-placeholder-count="0">
+          <a href="{{ m.href }}" onClick="{{ closeMenu }}" style="display: flex; align-items: baseline; gap: 1.1rem; text-decoration: none; color: #F4EFE6; font-family: var(--font-heading); font-size: 2.4rem; line-height: 1.1; padding: 0.45rem 0; border-bottom: 1px solid rgba(244,239,230,0.08); opacity: {{ m.op }}; transform: {{ m.tf }}; transition: opacity 0.45s ease {{ m.delay }}, transform 0.45s cubic-bezier(.2,.7,.3,1) {{ m.delay }}, color 0.2s;" style-hover="color: #A8C617;">
+            <span style="font-family: var(--font-body); font-size: 0.7rem; letter-spacing: 0.18em; color: #A8C617; font-weight: 500; min-width: 1.6rem;">{{ m.num }}</span>
+            <span style="letter-spacing: -0.02em;">{{ m.label }}</span>
+          </a>
+        </sc-for>
+      </nav>
+      <div style="padding-top: 1.5rem; display: flex; flex-direction: column; gap: 1.2rem;">
+        <a href="https://leos-alpenchalet.tramino.de/api/widgets/booking/" target="_blank" rel="noopener" style="display: block; text-align: center; background: #A8C617; color: #1a1612; padding: 1.05rem 1.4rem; font-family: var(--font-body); font-weight: 600; font-size: 1.05rem; text-decoration: none; border-radius: 4px; letter-spacing: 0.01em;">Jetzt buchen</a>
+        <div style="font-family: var(--font-body); font-size: 0.86rem; color: rgba(244,239,230,0.55); text-align: center; line-height: 1.5;">Rohrmooser Str. 22<br>87561 Oberstdorf-Tiefenbach</div>
+      </div>
+    </div>
+  </div>
+
+  <a href="index.html#staystory" aria-label="Tag bei uns erleben — digitale Hausführung öffnen" style="position: fixed; right: 1.2rem; bottom: 1.2rem; z-index: 1000; display: flex; align-items: center; gap: 0.7rem; background: var(--color-laerche); color: var(--color-text-on-dark); padding: 0.5rem 1.05rem 0.5rem 0.5rem; border-radius: 34px; box-shadow: 0 12px 30px rgba(28,24,18,0.4); text-decoration: none; font-family: var(--font-body); transform: {{ pillTf }}; opacity: {{ pillOp }}; pointer-events: {{ pillPE }}; transition: transform 0.5s cubic-bezier(.2,.8,.2,1), opacity 0.5s;">
+    <span style="position: relative; width: 42px; height: 42px; border-radius: 50%; overflow: hidden; flex: 0 0 auto; border: 2px solid rgba(244,239,230,0.5); background: linear-gradient(180deg, #e7b078 0%, #f0d9b2 55%, #f4ecd9 100%);">
+      <span style="position: absolute; top: 20%; left: 58%; width: 22px; height: 22px; border-radius: 50%; background: radial-gradient(circle, #fbeec6, #f3d9a6); box-shadow: 0 0 24px 8px rgba(243,217,166,0.5);"></span>
+      <span style="position: absolute; left: 0; bottom: 0; display: flex; width: 200%; height: 74%; animation: ss-pan 40s linear infinite;">
+        <svg viewBox="0 0 1200 400" preserveAspectRatio="none" style="width: 50%; height: 100%; display: block;"><path d="M0,300 L200,210 L380,292 L560,188 L760,286 L980,206 L1200,300 L1200,400 L0,400 Z" fill="#4A5D3A"></path></svg>
+        <svg viewBox="0 0 1200 400" preserveAspectRatio="none" style="width: 50%; height: 100%; display: block;"><path d="M0,300 L200,210 L380,292 L560,188 L760,286 L980,206 L1200,300 L1200,400 L0,400 Z" fill="#4A5D3A"></path></svg>
+      </span>
+      <span style="position: absolute; inset: 0; background: linear-gradient(180deg, rgba(28,24,18,.34), rgba(28,24,18,0) 32%, rgba(28,24,18,0) 52%, rgba(28,24,18,.55));"></span>
+    </span>
+    <span style="display: flex; flex-direction: column; text-align: left;">
+      <b style="font-size: 1.08rem; font-weight: 800; color: #FFFFFF; line-height: 1.15; letter-spacing: 0.01em;">Tag bei uns erleben</b>
+      <span style="font-size: 0.78rem; color: rgba(244,239,230,0.8); line-height: 1.2;">Digitale Hausführung</span>
+    </span>
+    <span style="color: #A8C617; font-size: 1.1rem;">→</span>
+  </a>
+
+  <section id="lage" data-screen-label="01 Lage Intro" style="padding: clamp(4rem, 8vw, 7rem) 0 3rem;">
+    <div style="max-width: 1400px; margin: 0 auto; padding: 0 clamp(1.5rem, 4vw, 3rem); display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 420px), 1fr)); gap: 2rem 4rem; align-items: end;">
+      <div>
+        <div style="font-family: var(--font-heading); font-size: 0.78rem; letter-spacing: 0.28em; text-transform: uppercase; color: var(--color-wiese);">Lage &amp; Aktivitäten</div>
+        <h1 style="font-family: var(--font-heading); font-weight: 400; font-size: clamp(2.8rem, 6vw, 5.2rem); line-height: 0.98; letter-spacing: -0.035em; margin: 0.8rem 0 0; text-wrap: pretty;"><em style="color: #A8C617; font-style: italic; font-family: var(--font-heading); font-weight: 400;">Tiefenbach</em> — ruhig gelegen, nah an Oberstdorf.</h1>
+      </div>
+      <div style="display: flex; flex-direction: column; gap: 0.8rem; max-width: 46ch;">
+        <p style="margin: 0; font-size: 1.18rem; line-height: 1.65; color: var(--color-text-muted); text-wrap: pretty;">Unser Haus in Tiefenbach liegt 8 Min. Autofahrt von Oberstdorf entfernt. Die Wanderwege beginnen vor der Haustür.<br><br>Der Vorteil unserer Lage: Ruhig, inmitten der Natur, herrlicher Blick in die Berge und trotzdem sehr nah an Oberstdorf.</p>
+        <span style="font-family: var(--font-handwritten); font-size: 1.6rem; font-weight: 500; color: var(--color-eichen); transform: rotate(-2deg); transform-origin: left; display: inline-block;">— Ruhe statt Trubel</span>
+      </div>
+    </div>
+  </section>
+
+  <section data-screen-label="02 Karte" style="padding: 1rem 0 clamp(4rem, 8vw, 7rem);">
+    <div style="max-width: 1400px; margin: 0 auto; padding: 0 clamp(1.5rem, 4vw, 3rem);">
+
+      <div role="tablist" aria-label="Saison wählen" style="display: flex; gap: 2.4rem; border-bottom: 1px solid var(--color-border-subtle); margin-bottom: 2.5rem;">
+        <button type="button" role="tab" onClick="{{ pickSommer }}" style="background: none; border: none; cursor: pointer; padding: 0 0 0.9rem; margin-bottom: -1px; font-family: var(--font-heading); font-size: 1.4rem; letter-spacing: -0.01em; color: {{ sommerColor }}; border-bottom: 2px solid {{ sommerLine }}; transition: color 0.2s ease;">Sommer</button>
+        <button type="button" role="tab" onClick="{{ pickWinter }}" style="background: none; border: none; cursor: pointer; padding: 0 0 0.9rem; margin-bottom: -1px; font-family: var(--font-heading); font-size: 1.4rem; letter-spacing: -0.01em; color: {{ winterColor }}; border-bottom: 2px solid {{ winterLine }}; transition: color 0.2s ease;">Winter</button>
+      </div>
+
+      <div style="display: flex; flex-wrap: wrap; gap: {{ mapGap }}; align-items: flex-start;">
+        <div style="flex: 1.25 1 480px; min-width: 0; display: flex; flex-direction: column; gap: 1rem; position: {{ mapPos }}; top: {{ mapTop }};">
+          <div style="position: relative; aspect-ratio: {{ mapAspect }}; border-radius: 8px; overflow: hidden; border: 1px solid var(--color-border-subtle); background: var(--color-altpapier-warm); box-shadow: var(--shadow-hero-image);">
+            <div ref="{{ mapRef }}" aria-label="Interaktive Karte der Umgebung" style="position: absolute; inset: 0;"></div>
+          </div>
+          <sc-if value="{{ isMobile }}" hint-placeholder-val="{{ false }}">
+            <p style="margin: -0.4rem 0 0; font-size: 0.82rem; color: var(--color-text-muted);">Mit zwei Fingern verschieben und zoomen.</p>
+          </sc-if>
+          <div style="display: flex; justify-content: space-between; align-items: baseline; gap: 1rem; flex-wrap: wrap; font-size: 0.85rem; color: var(--color-text-muted);">
+            <span style="font-family: var(--font-heading); letter-spacing: 0.2em; text-transform: uppercase; font-size: 0.74rem;">Rohrmooser Str. 22 · 87561 Oberstdorf-Tiefenbach</span>
+            <a href="https://www.google.com/maps/dir/?api=1&amp;destination=Rohrmooser+Stra%C3%9Fe+22,+87561+Oberstdorf" target="_blank" rel="noopener" style="color: var(--color-eichen); font-size: 0.95rem; text-underline-offset: 3px;" style-hover="color: #A8C617;">Route planen →</a>
+          </div>
+        </div>
+
+        <div style="flex: 1 1 360px; min-width: 0;">
+          <div style="font-family: var(--font-heading); font-size: 0.78rem; letter-spacing: 0.28em; text-transform: uppercase; color: var(--color-wiese); margin-bottom: 0.6rem;">{{ listEyebrow }}</div>
+          <ul style="list-style: none; margin: 0; padding: 0; border-top: 1px solid var(--color-border-subtle);">
+            <sc-for list="{{ items }}" as="item" hint-placeholder-count="7">
+              <li onMouseEnter="{{ item.onEnter }}" onClick="{{ item.onClick }}" style="display: grid; grid-template-columns: 2rem minmax(0, 1fr) auto; gap: {{ listGap }}; align-items: baseline; padding: 1.05rem 0.75rem; margin: 0 -0.75rem; border-bottom: 1px solid var(--color-border-subtle); cursor: pointer; border-radius: 4px; background: {{ item.bg }}; transition: background 0.2s ease;">
+                <span style="width: 1.7rem; height: 1.7rem; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; font-family: var(--font-heading); font-size: 0.85rem; align-self: center; border: 1px solid {{ item.numBorder }}; background: {{ item.numBg }}; color: {{ item.numColor }}; transition: background 0.2s ease, color 0.2s ease;">{{ item.label }}</span>
+                <span style="display: flex; flex-direction: column; gap: 0.15rem;">
+                  <span style="font-family: var(--font-heading); font-size: 1.2rem; line-height: 1.2; letter-spacing: -0.01em; color: var(--color-text-primary);">{{ item.name }}</span>
+                  <span style="font-size: 0.92rem; color: var(--color-text-muted);">{{ item.sub }}</span>
+                </span>
+                <span style="font-size: 0.92rem; font-weight: 500; color: var(--color-eichen); font-variant-numeric: tabular-nums; text-align: right; max-width: {{ distMax }};">{{ item.dist }}</span>
+              </li>
+            </sc-for>
+          </ul>
+          <p style="margin: 1.2rem 0 0; font-size: 0.9rem; color: var(--color-text-muted);">Eintrag antippen — die Karte springt zum Ziel.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="tipps" data-screen-label="04 Top-Tipps" style="padding: clamp(4rem, 8vw, 7rem) 0;">
+    <div style="max-width: 1400px; margin: 0 auto; padding: 0 clamp(1.5rem, 4vw, 3rem);">
+      <div style="display: flex; flex-direction: column; gap: 2.5rem;">
+        <div style="max-width: 760px;">
+          <div style="font-family: var(--font-heading); font-size: 0.78rem; letter-spacing: 0.28em; text-transform: uppercase; color: var(--color-wiese);">Unsere Top-Tipps</div>
+          <h2 style="font-family: var(--font-heading); font-weight: 400; font-size: clamp(2.4rem, 4.5vw, 3.4rem); line-height: 1.05; letter-spacing: -0.025em; margin: 0.7rem 0 0; text-wrap: pretty;">Was wir tun würden, <em style="color: #A8C617; font-style: italic; font-family: var(--font-heading); font-weight: 400;">wenn wir Sie wären</em>.</h2>
+          <span style="display: inline-block; margin-top: 0.9rem; font-family: var(--font-handwritten); font-size: 1.6rem; font-weight: 500; color: var(--color-eichen); transform: rotate(-2deg); transform-origin: left;">— Empfehlungen von uns</span>
+        </div>
+        <div role="tablist" aria-label="Saison wählen" style="display: flex; gap: 2.4rem; border-bottom: 1px solid var(--color-border-subtle);">
+          <button type="button" role="tab" onClick="{{ pickSommer }}" style="background: none; border: none; cursor: pointer; padding: 0 0 0.9rem; margin-bottom: -1px; font-family: var(--font-heading); font-size: 1.4rem; letter-spacing: -0.01em; color: {{ sommerColor }}; border-bottom: 2px solid {{ sommerLine }}; transition: color 0.2s ease;">Sommer</button>
+          <button type="button" role="tab" onClick="{{ pickWinter }}" style="background: none; border: none; cursor: pointer; padding: 0 0 0.9rem; margin-bottom: -1px; font-family: var(--font-heading); font-size: 1.4rem; letter-spacing: -0.01em; color: {{ winterColor }}; border-bottom: 2px solid {{ winterLine }}; transition: color 0.2s ease;">Winter</button>
+        </div>
+      </div>
+
+      <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 420px), 1fr)); gap: 3rem 2rem; margin-top: 3rem;">
+        <sc-for list="{{ tipps }}" as="t" hint-placeholder-count="4">
+          <article style="display: flex; flex-direction: column;">
+            <div style="position: relative; aspect-ratio: 16 / 10; background: var(--color-altpapier-warm); border-radius: var(--radius-lg); overflow: hidden;">
+              <image-slot id="{{ t.slotId }}" shape="rect" src="{{ t.img }}" placeholder="{{ t.imgHint }}" style="position: absolute; inset: 0; width: 100%; height: 100%;"></image-slot>
+            </div>
+            <div style="display: flex; flex-direction: column; gap: 0.5rem; flex: 1;">
+              <div style="font-family: var(--font-handwritten); color: var(--color-wiese); font-size: 1.5rem; font-weight: 500; margin: 1.1rem 0 -0.2rem; line-height: 1.1;">{{ t.cat }}</div>
+              <h4 style="font-family: var(--font-heading); font-weight: 400; font-size: 1.55rem; line-height: 1.1; letter-spacing: -0.015em; margin: 0; text-wrap: pretty;">{{ t.title }}</h4>
+              <p style="margin: 0; font-size: 0.98rem; line-height: 1.6; color: var(--color-text-muted); max-width: 52ch; text-wrap: pretty;">{{ t.text }}</p>
+              <sc-if value="{{ t.note }}" hint-placeholder-val="{{ false }}">
+                <p style="margin: 0; font-size: 0.92rem; line-height: 1.55; color: var(--color-text-primary); padding-top: 0.6rem; border-top: 1px solid var(--color-border-subtle);"><strong style="font-weight: 600;">Hinweis:</strong> {{ t.note }}</p>
+              </sc-if>
+              <div style="display: flex; justify-content: space-between; align-items: baseline; gap: 1rem; flex-wrap: wrap; margin-top: auto; padding-top: 0.8rem;">
+                <span style="font-size: 0.86rem; color: var(--color-text-muted); letter-spacing: 0.01em;">{{ t.meta }}</span>
+                <sc-if value="{{ t.href }}" hint-placeholder-val="{{ false }}">
+                  <a href="{{ t.href }}" target="_blank" rel="noopener" style="color: var(--color-eichen); font-size: 0.95rem; text-underline-offset: 3px; white-space: nowrap;" style-hover="color: #A8C617;">{{ t.linkLabel }} →</a>
+                </sc-if>
+              </div>
+            </div>
+          </article>
+        </sc-for>
+      </div>
+    </div>
+  </section>
+
+  <section id="inklusive" data-screen-label="03 Inklusive" style="background: var(--color-wiese); color: var(--color-altpapier); padding: clamp(4rem, 7vw, 6rem) 0;">
+    <div style="max-width: 1400px; margin: 0 auto; padding: 0 clamp(1.5rem, 4vw, 3rem);">
+      <div style="display: flex; flex-direction: column; align-items: center; text-align: center; gap: 0.5rem; max-width: 760px; margin: 0 auto;">
+        <span style="font-family: var(--font-handwritten); color: var(--color-altpapier); font-size: 1.8rem; font-weight: 500; line-height: 1.2; display: inline-block; transform: rotate(-2deg) translateZ(0); backface-visibility: hidden; will-change: transform; -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; text-rendering: geometricPrecision;">— im Übernachtungspreis enthalten</span>
+        <h2 style="font-family: var(--font-heading); font-weight: 400; font-size: clamp(2.2rem, 4.2vw, 3.2rem); line-height: 1.05; letter-spacing: -0.025em; color: var(--color-weiss); margin: 0; text-wrap: pretty;">Bus, Bahn und Bergbahn — einfach <em style="font-style: italic; font-family: var(--font-heading); font-weight: 400; color: #A8C617;">inklusive</em>.</h2>
+        <p style="font-size: 1.08rem; line-height: 1.65; color: var(--color-altpapier-warm); margin: 0.6rem 0 0; text-wrap: pretty;">Bei Anreise erhalten Sie Ihre Gästekarte digital in der App oder auch ausgedruckt auf Nachfrage. Von Mai bis Anfang November erhalten Sie zusätzlich Bergbahn Unlimited auf Ihrer Gästekarte.</p>
+      </div>
+
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 440px), 1fr)); gap: 1.5rem; margin-top: 3rem; align-items: stretch;">
+
+        <article style="background: var(--color-weiss); color: var(--color-text-primary); border-radius: 12px; padding: clamp(1.5rem, 3vw, 2.5rem); display: flex; flex-direction: column; gap: 1.4rem;">
+          <div style="display: flex; justify-content: space-between; align-items: center; gap: 1rem; flex-wrap: wrap;">
+            <div style="background: #FFFFFF; border-radius: 8px; height: 84px; width: 190px; display: flex; align-items: center; justify-content: center; overflow: hidden; border: 1px solid var(--color-border-subtle);">
+              <img src="assets/logo-allgaeu-walser-pass.jpg" alt="Allgäu-Walser-Pass" style="height: 128%; width: auto; object-fit: contain;">
+            </div>
+            <span style="font-family: var(--font-heading); font-size: 0.72rem; letter-spacing: 0.26em; text-transform: uppercase; color: var(--color-wiese);">Ganzjährig</span>
+          </div>
+          <div>
+            <h3 style="font-family: var(--font-heading); font-weight: 400; font-size: 1.9rem; line-height: 1.1; letter-spacing: -0.02em; margin: 0;">Allgäu-Walser-Pass Premium.</h3>
+            <p style="margin: 0.6rem 0 0; font-size: 1rem; line-height: 1.65; color: var(--color-text-muted);">Ihre Gästekarte als Übernachtungsgast in Oberstdorf. Sie gilt vom Anreise- bis zum Abreisetag, digital in der App oder ausgedruckt.</p>
+          </div>
+          <div>
+            <div style="font-family: var(--font-heading); font-size: 0.72rem; letter-spacing: 0.26em; text-transform: uppercase; color: var(--color-wiese); margin-bottom: 0.4rem;">Kostenlos</div>
+            <ul style="list-style: none; margin: 0; padding: 0;">
+              <li style="display: grid; grid-template-columns: minmax(0, 1fr); gap: 0.15rem; padding: 0.85rem 0; border-top: 1px solid var(--color-border-subtle);">
+                <span style="font-family: var(--font-heading); font-size: 1.12rem;">Bus &amp; Nahverkehrszüge</span>
+                <span style="font-size: 0.93rem; line-height: 1.55; color: var(--color-text-muted);">Mit dem integrierten Mobil Pass Allgäu: in Oberstdorf, im Ober- und Westallgäu, nach Kempten, ins Tannheimer Tal, auf einigen Linien im Bregenzerwald und bis an den Bodensee. Die Haltestelle liegt vor der Tür.</span>
+              </li>
+              <li style="display: grid; grid-template-columns: minmax(0, 1fr); gap: 0.15rem; padding: 0.85rem 0; border-top: 1px solid var(--color-border-subtle);">
+                <span style="font-family: var(--font-heading); font-size: 1.12rem;">Gästeprogramm</span>
+                <span style="font-size: 0.93rem; line-height: 1.55; color: var(--color-text-muted);">Geführte Ganz- und Halbtageswanderungen, Sennerei- und Naturführungen, Gesundheitsangebote.</span>
+              </li>
+              <li style="display: grid; grid-template-columns: minmax(0, 1fr); gap: 0.15rem; padding: 0.85rem 0; border-top: 1px solid var(--color-border-subtle);">
+                <span style="font-family: var(--font-heading); font-size: 1.12rem;">Vor Ort in Oberstdorf</span>
+                <span style="font-size: 0.93rem; line-height: 1.55; color: var(--color-text-muted);">Eintritt ins Eissportzentrum und in die Bergschau, Leihmaterial in der Tourist-Information, WLAN im Oberstdorf Haus, im Kurpark und in der Alpenrose Tiefenbach.</span>
+              </li>
+              <li style="display: grid; grid-template-columns: minmax(0, 1fr); gap: 0.15rem; padding: 0.85rem 0; border-top: 1px solid var(--color-border-subtle); border-bottom: 1px solid var(--color-border-subtle);">
+                <span style="font-family: var(--font-heading); font-size: 1.12rem;">Parken</span>
+                <span style="font-size: 0.93rem; line-height: 1.55; color: var(--color-text-muted);">Täglich 8 Stunden gebührenfrei auf P2 am Ortseingang und am Parkplatz „Grüne Gasse“.</span>
+              </li>
+            </ul>
+          </div>
+          <div>
+            <div style="font-family: var(--font-heading); font-size: 0.72rem; letter-spacing: 0.26em; text-transform: uppercase; color: var(--color-wiese); margin-bottom: 0.4rem;">Ermäßigt</div>
+            <p style="margin: 0; font-size: 0.95rem; line-height: 1.65; color: var(--color-text-primary);">Breitachklamm · Heini-Klopfer-Skiflugschanze · Oberstdorf Therme · Naturbad Freibergsee · Veranstaltungen in Oberstdorf · zahlreiche Attraktionen im Oberallgäu und Kleinwalsertal</p>
+          </div>
+          <p style="margin: auto 0 0; font-size: 0.86rem; line-height: 1.55; color: var(--color-text-muted);">Gut zu wissen: Die Walserbusse ab Walserschanz ins Kleinwalsertal und die Linie 8 in die Spielmannsau kosten extra.</p>
+        </article>
+
+        <article style="background: var(--color-weiss); color: var(--color-text-primary); border-radius: 12px; padding: clamp(1.5rem, 3vw, 2.5rem); display: flex; flex-direction: column; gap: 1.4rem;">
+          <div style="display: flex; justify-content: space-between; align-items: center; gap: 1rem; flex-wrap: wrap;">
+            <div style="background: #FFFFFF; border-radius: 8px; height: 84px; width: 190px; display: flex; align-items: center; justify-content: center; overflow: hidden; border: 1px solid var(--color-border-subtle);">
+              <img src="assets/logo-bergbahn-unlimited.png" alt="Bergbahn Unlimited" style="height: 118%; width: auto; object-fit: contain;">
+            </div>
+            <span style="font-family: var(--font-heading); font-size: 0.72rem; letter-spacing: 0.26em; text-transform: uppercase; color: var(--color-wiese);">Mai bis Anfang November</span>
+          </div>
+          <div>
+            <h3 style="font-family: var(--font-heading); font-weight: 400; font-size: 1.9rem; line-height: 1.1; letter-spacing: -0.02em; margin: 0;">Bergbahn Unlimited.</h3>
+            <p style="margin: 0.6rem 0 0; font-size: 1rem; line-height: 1.65; color: var(--color-text-muted);">Als Partnerbetrieb buchen wir Ihnen das Ticket kostenlos auf Ihre Gästekarte. Damit fahren Sie mit allen Bergbahnen in Oberstdorf und im Kleinwalsertal, so oft Sie möchten.</p>
+          </div>
+          <div>
+            <div style="font-family: var(--font-heading); font-size: 0.72rem; letter-spacing: 0.26em; text-transform: uppercase; color: var(--color-wiese); margin-bottom: 0.4rem;">Diese Bahnen sind dabei</div>
+            <div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); column-gap: 1.5rem; border-top: 1px solid var(--color-border-subtle);">
+              <span style="font-family: var(--font-heading); font-size: 1.12rem; padding: 0.8rem 0; border-bottom: 1px solid var(--color-border-subtle);">Nebelhorn</span>
+              <span style="font-family: var(--font-heading); font-size: 1.12rem; padding: 0.8rem 0; border-bottom: 1px solid var(--color-border-subtle);">Fellhorn</span>
+              <span style="font-family: var(--font-heading); font-size: 1.12rem; padding: 0.8rem 0; border-bottom: 1px solid var(--color-border-subtle);">Kanzelwand</span>
+              <span style="font-family: var(--font-heading); font-size: 1.12rem; padding: 0.8rem 0; border-bottom: 1px solid var(--color-border-subtle);">Söllereck</span>
+              <span style="font-family: var(--font-heading); font-size: 1.12rem; padding: 0.8rem 0; border-bottom: 1px solid var(--color-border-subtle);">Ifenbahn</span>
+              <span style="font-family: var(--font-heading); font-size: 1.12rem; padding: 0.8rem 0; border-bottom: 1px solid var(--color-border-subtle);">Heubergbahn</span>
+              <span style="font-family: var(--font-heading); font-size: 1.12rem; padding: 0.8rem 0; border-bottom: 1px solid var(--color-border-subtle);">Zaferna-Sesselbahn</span>
+              <span style="font-family: var(--font-heading); font-size: 1.12rem; padding: 0.8rem 0; border-bottom: 1px solid var(--color-border-subtle);">Walmendingerhorn</span>
+            </div>
+          </div>
+          <div>
+            <div style="font-family: var(--font-heading); font-size: 0.72rem; letter-spacing: 0.26em; text-transform: uppercase; color: var(--color-wiese); margin-bottom: 0.4rem;">Ihre Vorteile</div>
+            <ul style="list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 0.5rem; font-size: 0.95rem; line-height: 1.55;">
+              <li>Unbegrenzt viele Berg- und Talfahrten, ohne Zusatzkosten.</li>
+              <li>Gültig schon am Anreisetag und noch am Abreisetag.</li>
+              <li>Kein Ticketschalter: Der QR-Code Ihrer Gästekarte ist Ihr Ticket.</li>
+              <li>Zwei Länder, ein Ticket: Oberstdorf und das Kleinwalsertal.</li>
+            </ul>
+          </div>
+          <p style="margin: auto 0 0; font-size: 0.86rem; line-height: 1.55; color: var(--color-text-muted);">Gut zu wissen: Die Saisonzeiten der einzelnen Bahnen unterscheiden sich. Hunde fahren nicht kostenlos mit.</p>
+        </article>
+      </div>
+    </div>
+  </section>
+
+
+  <div aria-hidden="true" style="height: clamp(3rem, 6vw, 5rem); background: var(--color-altpapier);"></div>
+
+  <section data-screen-label="05 CTA" style="background: #A8C617; color: #1F1B17; padding: 4rem 0;">
+    <div style="max-width: 1400px; margin: 0 auto; padding: 0 clamp(1.5rem, 4vw, 3rem);">
+      <div style="display: flex; align-items: center; justify-content: space-between; gap: 2.5rem; flex-wrap: wrap;">
+        <div>
+          <h3 style="font-family: var(--font-heading); font-size: clamp(2rem, 4vw, 2.8rem); line-height: 1.05; letter-spacing: -0.02em; color: #FFFFFF; margin: 0; font-weight: 400;">Bereit für Ihren Urlaub?</h3>
+          <p style="font-size: 1.05rem; color: #FFFFFF; margin: 0.6rem 0 0; max-width: 50ch;">Verfügbarkeit prüfen, Wohnung wählen, buchen — alles in einem Schritt.</p>
+        </div>
+        <a href="https://leos-alpenchalet.tramino.de/api/widgets/booking/" target="_blank" rel="noopener" style="background: var(--color-altpapier); color: var(--color-laerche); font-weight: 500; font-size: 1rem; padding: 1.05rem 2rem; border-radius: 4px; text-decoration: none; transition: background 0.15s; flex-shrink: 0;" style-hover="background: var(--color-weiss); color: var(--color-laerche);">Jetzt buchen →</a>
+      </div>
+    </div>
+  </section>
+
+  <section id="wohnungen" data-screen-label="06 Wohnungen" style="background: var(--color-altpapier); padding: clamp(4rem, 8vw, 7rem) 0;">
+    <div style="max-width: 1400px; margin: 0 auto; padding: 0 clamp(1.5rem, 4vw, 3rem);">
+      <div style="max-width: 680px; margin: 0 auto; text-align: center; display: flex; flex-direction: column; align-items: center;">
+        <div style="font-family: var(--font-heading); font-size: 0.78rem; letter-spacing: 0.28em; text-transform: uppercase; color: var(--color-wiese);">Ihr Chalet zum Wohlfühlen</div>
+        <h2 style="font-family: var(--font-heading); font-weight: 400; font-size: clamp(2.4rem, 4.5vw, 3.4rem); line-height: 1.05; letter-spacing: -0.025em; margin: 0.7rem 0 0; text-wrap: balance;">Noch unschlüssig, welche <em style="color: #A8C617; font-style: italic; font-family: var(--font-heading); font-weight: 400;">Wohnung</em> passt?</h2>
+        <p style="margin: 1rem 0 0; font-size: 1.08rem; line-height: 1.65; color: var(--color-text-muted); max-width: 52ch; text-wrap: pretty;">Sechs Wohnungen, jede mit eigenem Charakter – von ebenerdig mit Terrasse bis unterm Dachstuhl. Schauen Sie sich in Ruhe um.</p>
+      </div>
+
+      <a href="index.html#wohnungen" aria-label="Alle Wohnungen ansehen" style="display: grid; grid-template-columns: {{ stripCols }}; gap: 1rem; margin-top: 3rem; text-decoration: none; align-items: start; overflow-x: {{ stripOverflow }}; scroll-snap-type: x mandatory; -webkit-overflow-scrolling: touch; scrollbar-width: none; margin-left: {{ stripBleed }}; margin-right: {{ stripBleed }}; padding-left: {{ stripPad }}; padding-right: {{ stripPad }}; scroll-padding-left: {{ stripPad }};">
+        <span style="display: block; aspect-ratio: 4 / 5; overflow: hidden; border-radius: var(--radius-lg); background: var(--color-altpapier-warm); scroll-snap-align: start;">
+          <img src="assets/wohnung-gaisberg.jpg" alt="Terrasse in der Abendsonne" style="width: 100%; height: 100%; object-fit: cover; display: block; transition: transform 0.7s ease;" style-hover="transform: scale(1.06);">
+        </span>
+        <span style="display: block; aspect-ratio: 4 / 5; overflow: hidden; border-radius: var(--radius-lg); background: var(--color-altpapier-warm); scroll-snap-align: start; margin-top: {{ stripOffset }};">
+          <img src="assets/wohnung-hochvogel.jpg" alt="Wohnküche unterm Dachstuhl" style="width: 100%; height: 100%; object-fit: cover; display: block; transition: transform 0.7s ease;" style-hover="transform: scale(1.06);">
+        </span>
+        <span style="display: block; aspect-ratio: 4 / 5; overflow: hidden; border-radius: var(--radius-lg); background: var(--color-altpapier-warm); scroll-snap-align: start;">
+          <img src="assets/wohnung-hohes-licht.jpg" alt="Schlafzimmer mit Holzbalken" style="width: 100%; height: 100%; object-fit: cover; display: block; transition: transform 0.7s ease;" style-hover="transform: scale(1.06);">
+        </span>
+      </a>
+      <div style="display: flex; justify-content: center; margin-top: 3rem;">
+        <a href="index.html#wohnungen" style="background: #A8C617; color: #FFFFFF; padding: 1.05rem 2rem; border-radius: 4px; font-weight: 500; font-size: 1rem; text-decoration: none; transition: background 0.15s;" style-hover="background: #93AD12; color: #FFFFFF;">Wohnungen entdecken →</a>
+      </div>
+    </div>
+  </section>
+
+  <section id="faq" data-screen-label="07 FAQ" style="background: var(--color-altpapier); padding: 0 0 clamp(4rem, 8vw, 7rem);">
+    <div style="max-width: 1400px; margin: 0 auto; padding: 0 clamp(1.5rem, 4vw, 3rem);">
+      <div style="max-width: 760px; margin: 0 auto 3rem; text-align: center;">
+        <div style="font-family: var(--font-heading); font-size: 0.78rem; letter-spacing: 0.28em; text-transform: uppercase; color: var(--color-wiese);">Häufige Fragen</div>
+        <h2 style="font-family: var(--font-heading); font-weight: 400; font-size: clamp(2.4rem, 4.5vw, 3.4rem); line-height: 1.05; letter-spacing: -0.025em; margin: 0.7rem 0 0;">Haben Sie noch Fragen?</h2>
+      </div>
+      <div style="max-width: 860px; margin: 0 auto; border-top: 1px solid var(--color-border-subtle);">
+        <sc-for list="{{ faqs }}" as="f" hint-placeholder-count="5">
+          <div style="border-bottom: 1px solid var(--color-border-subtle);">
+            <button type="button" onClick="{{ f.toggle }}" aria-expanded="{{ f.open }}" style="display: flex; justify-content: space-between; align-items: center; width: 100%; padding: 1.4rem 0; gap: 1.2rem; background: none; border: none; cursor: pointer; text-align: left; font-family: var(--font-heading); font-size: 1.25rem; line-height: 1.3; letter-spacing: -0.015em; color: var(--color-text-primary); transition: color 0.15s;" style-hover="color: #93AD12;">
+              <span>{{ f.q }}</span>
+              <span style="font-family: var(--font-heading); font-size: 1.5rem; line-height: 1; flex-shrink: 0; color: {{ f.plusColor }}; transform: {{ f.plusTf }}; transition: transform 0.2s, color 0.15s;">+</span>
+            </button>
+            <sc-if value="{{ f.open }}" hint-placeholder-val="{{ false }}">
+              <div style="padding: 0 0 1.6rem; max-width: 64ch; font-size: 1rem; line-height: 1.7; color: var(--color-text-muted);">
+                <p style="margin: 0;">{{ f.a }}</p>
+                <sc-if value="{{ f.href }}" hint-placeholder-val="{{ false }}">
+                  <a href="{{ f.href }}" target="_blank" rel="noopener" style="display: inline-block; margin-top: 0.6rem; color: var(--color-eichen); text-underline-offset: 3px;" style-hover="color: #93AD12;">{{ f.linkLabel }} →</a>
+                </sc-if>
+              </div>
+            </sc-if>
+          </div>
+        </sc-for>
+      </div>
+    </div>
+  </section>
+
+  <footer style="background: var(--color-laerche); color: var(--color-altpapier); padding: 4rem 0 2rem;">
+    <div style="max-width: 1400px; margin: 0 auto; padding: 0 clamp(1.5rem, 4vw, 3rem);">
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 150px), 1fr)); gap: 2.5rem 2rem;">
+        <div>
+          <h4 style="font-family: var(--font-heading); font-size: 1.4rem; color: var(--color-altpapier); margin: 0 0 1rem; font-weight: 400;">Leos Alpenchalet</h4>
+          <p style="font-size: 0.95rem; line-height: 1.6; color: var(--color-altpapier); opacity: 0.85; margin: 0;">Rohrmooser Straße 22<br>87561 Oberstdorf-Tiefenbach<br>Allgäu, Deutschland</p>
+        </div>
+        <div>
+          <h5 style="font-family: var(--font-heading); font-size: 0.78rem; letter-spacing: 0.24em; text-transform: uppercase; color: var(--color-altpapier-warm); font-weight: 400; margin: 0 0 1rem;">Wohnungen</h5>
+          <div style="display: flex; flex-direction: column; gap: 0.55rem; font-size: 0.95rem;">
+            <a href="index.html#ifen" style="color: var(--color-altpapier); opacity: 0.85; text-decoration: none; transition: opacity 0.15s, color 0.15s;" style-hover="color: #A8C617; opacity: 1;">Ifen</a>
+            <a href="index.html#himmeleck" style="color: var(--color-altpapier); opacity: 0.85; text-decoration: none; transition: opacity 0.15s, color 0.15s;" style-hover="color: #A8C617; opacity: 1;">Himmeleck</a>
+            <a href="index.html#gaisberg" style="color: var(--color-altpapier); opacity: 0.85; text-decoration: none; transition: opacity 0.15s, color 0.15s;" style-hover="color: #A8C617; opacity: 1;">Gaisberg</a>
+            <a href="index.html#schneck" style="color: var(--color-altpapier); opacity: 0.85; text-decoration: none; transition: opacity 0.15s, color 0.15s;" style-hover="color: #A8C617; opacity: 1;">Schneck</a>
+            <a href="index.html#hohes-licht" style="color: var(--color-altpapier); opacity: 0.85; text-decoration: none; transition: opacity 0.15s, color 0.15s;" style-hover="color: #A8C617; opacity: 1;">Hohes Licht</a>
+            <a href="index.html#hochvogel" style="color: var(--color-altpapier); opacity: 0.85; text-decoration: none; transition: opacity 0.15s, color 0.15s;" style-hover="color: #A8C617; opacity: 1;">Hochvogel</a>
+          </div>
+        </div>
+        <div>
+          <h5 style="font-family: var(--font-heading); font-size: 0.78rem; letter-spacing: 0.24em; text-transform: uppercase; color: var(--color-altpapier-warm); font-weight: 400; margin: 0 0 1rem;">Service</h5>
+          <div style="display: flex; flex-direction: column; gap: 0.55rem; font-size: 0.95rem;">
+            <a href="index.html#bergbahn" style="color: var(--color-altpapier); opacity: 0.85; text-decoration: none; transition: opacity 0.15s, color 0.15s;" style-hover="color: #A8C617; opacity: 1;">Bergbahn-Ticket</a>
+            <a href="#lage" style="color: var(--color-altpapier); opacity: 0.85; text-decoration: none; transition: opacity 0.15s, color 0.15s;" style-hover="color: #A8C617; opacity: 1;">Lage &amp; Aktivitäten</a>
+            <a href="index.html#faq" style="color: var(--color-altpapier); opacity: 0.85; text-decoration: none; transition: opacity 0.15s, color 0.15s;" style-hover="color: #A8C617; opacity: 1;">Häufige Fragen</a>
+            <a href="index.html#gastgeber" style="color: var(--color-altpapier); opacity: 0.85; text-decoration: none; transition: opacity 0.15s, color 0.15s;" style-hover="color: #A8C617; opacity: 1;">Kontakt &amp; Anfrage</a>
+          </div>
+        </div>
+        <div>
+          <h5 style="font-family: var(--font-heading); font-size: 0.78rem; letter-spacing: 0.24em; text-transform: uppercase; color: var(--color-altpapier-warm); font-weight: 400; margin: 0 0 1rem;">Rechtliches</h5>
+          <div style="display: flex; flex-direction: column; gap: 0.55rem; font-size: 0.95rem;">
+            <a href="index.html#impressum" style="color: var(--color-altpapier); opacity: 0.85; text-decoration: none; transition: opacity 0.15s, color 0.15s;" style-hover="color: #A8C617; opacity: 1;">Impressum</a>
+            <a href="index.html#datenschutz" style="color: var(--color-altpapier); opacity: 0.85; text-decoration: none; transition: opacity 0.15s, color 0.15s;" style-hover="color: #A8C617; opacity: 1;">Datenschutzerklärung</a>
+          </div>
+        </div>
+      </div>
+      <div style="display: flex; justify-content: space-between; align-items: baseline; flex-wrap: wrap; gap: 1rem; margin-top: 3rem; padding-top: 1.5rem; border-top: 1px solid rgba(244,239,230,0.12);">
+        <span style="font-family: var(--font-handwritten); font-size: 1.3rem; color: var(--color-altpapier); opacity: 0.7;">Ihre Familie Pinn</span>
+        <span style="font-size: 0.85rem; color: var(--color-text-on-dark-muted);">© 2026 Leos Alpenchalet</span>
+      </div>
+    </div>
+  </footer>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;mapStyle&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;Topo&quot;,&quot;Topo Esri&quot;,&quot;Relief&quot;,&quot;Hell&quot;],&quot;default&quot;:&quot;Topo&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;Karte&quot;},&quot;defaultSeason&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;Sommer&quot;,&quot;Winter&quot;],&quot;default&quot;:&quot;Sommer&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;Karte&quot;}}">
+const HOME = [47.4159274, 10.2360347];
+const UMGEBUNG = [
+  { name: 'Rohrmoostal', sub: 'Wandern und Radeln ab der Haustür', dist: 'vor der Haustür', ll: [47.406391, 10.1665379] },
+  { name: 'Lochbachtal', sub: 'Stilles Seitental für Wanderungen', dist: 'ab Tiefenbach', ll: [47.4202051, 10.1773804] },
+  { name: 'Breitachklamm', sub: 'Tiefste Felsenschlucht Mitteleuropas', dist: '3 km · 6 Min.', ll: [47.401726, 10.2297446] },
+  { name: 'Kleinwalsertal', sub: 'Österreichisches Hochtal, Riezlern bis Baad', dist: 'Riezlern ca. 10 km', ll: [47.3580, 10.1900] },
+  { name: 'Ifenbahn', sub: 'Blick aufs Gottesackerplateau, Wandern & Skifahren', dist: '13 km · 20 Min.', ll: [47.3426246, 10.1375605] },
+  { name: 'Fellhornbahn', sub: 'Bergbahn ins Wander- und Skigebiet', dist: '14 km · 17 Min.', ll: [47.3523582, 10.2629138] },
+  { name: 'Söllereckbahn', sub: 'Familienberg mit Allgäu Coaster', dist: '7 km · 8 Min.', ll: [47.400288, 10.2422934] },
+  { name: 'Freibergsee', sub: 'Höchstgelegener Badesee Deutschlands · ab Parkplatz Renksteg ca. 20 Min. zu Fuß', dist: '7 km · 10 Min.', ll: [47.3803, 10.2683] },
+  { name: 'Oberstdorf', sub: 'Ortszentrum, Bahnhof & Einkaufen / Bummeln', dist: '6 km · 8 Min.', ll: [47.4097, 10.2780] },
+  { name: 'Nebelhornbahn', sub: 'Hinauf auf 2.224 m, 400-Gipfel-Blick', dist: '8 km · 12 Min.', ll: [47.4047108, 10.2853519] },
+  { name: 'Heini-Klopfer-Skiflugschanze', sub: 'Aussichtsplattform · eigener Parkplatz, hinauf per Schrägaufzug oder ca. 15 Min. zu Fuß', dist: '7 km · 10 Min.', ll: [47.3749871, 10.270242] }
+];
+const WINTER = [
+  { name: 'Breitachklamm', sub: 'Winterwanderung durch die Schlucht im Eis', dist: '3 km · 6 Min.', ll: [47.401726, 10.2297446] },
+  { name: 'Rohrmoostal', sub: 'Ruhige Winterwanderung ab der Haustür', dist: 'vor der Haustür', ll: [47.406391, 10.1665379] },
+  { name: 'Kleinwalsertal', sub: 'Winterwandern, Skifahren & Langlauf', dist: 'Riezlern ca. 10 km', ll: [47.3580, 10.1900] },
+  { name: 'Ifenbahn', sub: 'Skigebiet Ifen am Gottesackerplateau', dist: '13 km · 20 Min.', ll: [47.3426246, 10.1375605] },
+  { name: 'Fellhorn / Kanzelwand', sub: 'Größtes Skigebiet der Region, grenzüberschreitend · rund 36 km Pisten', dist: '14 km · 17 Min.', ll: [47.3523582, 10.2629138] },
+  { name: 'Söllereckbahn', sub: 'Familien-Skigebiet', dist: '7 km · 8 Min.', ll: [47.400288, 10.2422934] },
+  { name: 'Nebelhornbahn', sub: 'Skifahren & Winterpanorama auf 2.224 m', dist: '8 km · 12 Min.', ll: [47.4047108, 10.2853519] },
+  { name: 'Oberstdorf', sub: 'Ortszentrum, Bahnhof & Einkaufen / Bummeln', dist: '6 km · 8 Min.', ll: [47.4097, 10.2780] },
+  { name: 'Oberstdorf Therme', sub: 'Thermal- und Saunalandschaft', dist: '7 km · 10 Min.', ll: [47.4047109, 10.2770523] },
+  { name: 'Alpe Dornach', sub: 'Einkehr auf der Winterwanderung zur Breitachklamm', dist: '30 Min. zu Fuß', ll: [47.3999043, 10.2221201] },
+  { name: 'Mittagberg', sub: 'Winterwandern & 5,2 km Naturrodelbahn · Parkplatz an der Talstation in Immenstadt', dist: '28 km · 30 Min.', ll: [47.536111, 10.215556] }
+];
+const POIS = { sommer: UMGEBUNG, winter: WINTER };
+const TIPPS = {
+  sommer: [
+    { id: 'rad-rohrmoos', cat: 'Radtour', title: 'Durchs Rohrmoostal zur Piesenalpe.', imgHint: 'Foto · Rohrmoostal / Piesenalpe',
+      text: 'Sie starten direkt an der Unterkunft und radeln über die nahezu autofreie Mautstraße ins Rohrmoos, vorbei an saftig grünen Bergwiesen und den imposanten Gottesackerwänden. Einkehr in der Piesenalpe, einer echten Sennalpe mit eigener Käserei.',
+      meta: 'Start vor der Haustür · Radtour mit ca. 20 km & 750 Hm', href: 'https://www.piesenalpe.com/', linkLabel: 'Zur Alpe', img: 'assets/tipp-piesenalpe.avif' },
+    { id: 'grat-fellhorn', cat: 'Wanderung', title: 'Am Grat vom Fellhorn zum Söllereck.', imgHint: 'Foto · Fellhorngrat',
+      text: 'Mit dem Bus zur Fellhornbahn. Mit der Bahn hoch und den Grat entlangwandern Richtung Söllereck. Traumhaftes Panorama in die Allgäuer Hochalpen, ins Kleinwalsertal und ins Illertal. Einkehr in der Sölleralpe. Hinunter geht es mit der Söllereckbahn oder zu Fuß, zurück nach Tiefenbach mit dem Bus.',
+      meta: 'Bus · Fellhornbahn · Sölleralpe · Söllereckbahn · 4 Std. & 650 Hm', href: 'https://www.oberstdorf.de/alpininfo/tourensuche/tagestouren/fellhorngrat.html', linkLabel: 'Zur Tour', img: 'assets/tipp-fellhorngrat.jpg' },
+    { id: 'tandem', cat: 'Erlebnis', title: 'Tandemflug vom Nebelhorn — mit uns.', imgHint: 'Foto · Gleitschirm über Oberstdorf',
+      text: 'Mit Hoch Hinaus Tandemflüge schweben Sie vom Nebelhorn über Oberstdorf. Vorkenntnisse braucht es keine, ein paar schnelle Laufschritte genügen. Den Rest übernehmen erfahrene Piloten.',
+      meta: 'Flüge, Preise & Termine online', href: 'https://hochhinaus-tandem.de/', linkLabel: 'Hoch Hinaus', img: 'assets/tipp-tandem.jpg' },
+    { id: 'gleitweg', cat: 'Bergtour', title: 'Über den Gleitweg ins Oytal.', imgHint: 'Foto · Seealpsee / Gleitweg',
+      text: 'Von der Nebelhorn Bergstation Höfatsblick hinunter zum Seealpsee, dann über den Gleitweg ins Oytal. Am Oytalhaus lässt sich einkehren, zurück nach Oberstdorf zu Fuß oder mit den Oytal-Rollern. Wer lieber hoch als runter läuft, macht die Wanderung andersherum.',
+      note: 'anspruchsvoll. Trittsicherheit, Schwindelfreiheit und gutes Schuhwerk sind nötig.',
+      meta: 'ca. 4,5 Std. · rund 1.100 Hm', href: 'https://www.oberstdorf.de/alpininfo/huetten/huettenanstiege/ueber-gleitweg.html', linkLabel: 'Zur Tour', img: 'assets/tipp-gleitweg.webp' },
+    { id: 'quattro-canti', cat: 'Abendessen', title: 'Pizzeria Ai Quattro Canti.', imgHint: 'Foto · Ai Quattro Canti',
+      text: 'Sizilianische Trattoria direkt gegenüber der Nebelhornbahn: Pizza aus dem Steinofen, hausgemachte Pasta und ein Tiramisu, für das sich ein Besuch lohnt.',
+      meta: 'Nebelhornstraße 48 · Oberstdorf', href: 'https://www.aiquattrocanti.de/', linkLabel: 'Zur Website', img: 'assets/tipp-quattro-canti.avif' },
+    { id: 'freibergsee', cat: 'Baden', title: 'Ein Sommertag am Freibergsee.', imgHint: 'Foto · Freibergsee',
+      text: 'Der höchstgelegene Badesee Deutschlands, auf 930 m im Wald über Oberstdorf. Weil er geschützt im Talkessel liegt, wird er bis zu 25 °C warm. Mit Badefloß, Sprungturm, Bootsverleih und Seeterrasse.',
+      meta: 'ab Renksteg ca. 20 Min. zu Fuß · Mai bis September', href: 'https://www.freibergsee.com/', linkLabel: 'Naturbad', img: 'assets/tipp-freibergsee.jpg' }
+  ],
+  winter: [
+    { id: 'ifen', cat: 'Skifahren', title: 'Am Ifen — unser Lieblingsberg.', imgHint: 'Foto · Hoher Ifen / Gottesackerplateau',
+      text: 'Der Hohe Ifen (2.230 m) ist einer der wenigen markanten Tafelberge in den Alpen und das Wahrzeichen des Kleinwalsertals. Zu seinen Füßen liegt das Gottesackerplateau, eine weite Karstlandschaft und europäisches Naturschutzgebiet. Genießen Sie schöne Abfahrten auf breiten Pisten.',
+      meta: '25 Pistenkilometer · Kleinwalsertal', href: 'https://www.ok-bergbahnen.com/aktiv-sport/skifahren/skigebiete-kleinwalsertal/skigebiet-ifen.html', linkLabel: 'Skigebiet', img: 'assets/tipp-ifen-ski.jpg' },
+    { id: 'fellhorn-ski', cat: 'Skifahren', title: 'Fellhorn & Kanzelwand.', imgHint: 'Foto · Fellhorn im Winter',
+      text: 'Das große Skigebiet zwischen Oberstdorf und dem Kleinwalsertal: 36 bestens präparierte Pistenkilometer für jedes Skilevel, phänomenale Aussichten und entspannte 2-Länder-Kulinarik zu familienfreundlichen Preisen.',
+      meta: '36 Pistenkilometer · Grenzüberschreitendes Skigebiet', href: 'https://www.ok-bergbahnen.com/aktiv-sport/skifahren/skigebiete-oberstdorf/skigebiete-fellhorn-kanzelwand.html', linkLabel: 'Skigebiet', img: 'assets/tipp-fellhorn-ski.jpg' },
+    { id: 'mittag', cat: 'Skifahren-Alternative', title: 'Wandern und Rodeln am Mittag.', imgHint: 'Foto · Rodelbahn am Mittag',
+      text: 'Mit der Mittagbahn bei Immenstadt hinauf und oben die Aussicht über das Alpenvorland und Illertal genießen. Anschließend auf der 5,2 km langen Naturrodelbahn zurück ins Tal. Die Rodel gibt es bei uns oder an der Mittag Talstation zu leihen.',
+      meta: 'Immenstadt · Einkehr an der Mittelstation', href: 'https://www.alpsee-gruenten.de/entdecken/pois/ALP/352f274a-6c80-4164-9dd1-900cbbe12df8/rodelbahn-am-mittag', linkLabel: 'Weitere Infos', img: 'assets/tipp-mittag.jpg' },
+    { id: 'loipe', cat: 'Langlauf', title: 'Rundkurs Tiefenbach — Loipe vor der Tür.', imgHint: 'Foto · Loipe Tiefenbach',
+      text: 'Ein Einstieg der Loipe liegt direkt hinter unserem Haus. Der Rundkurs führt über sonnige Hänge unterhalb des Falkenbergs, mit Blick in den Oberstdorfer Talkessel. Er ist ein Geheimtipp für Klassisch-Läufer. Zum Skaten bieten sich die Loipen im Rohrmoos an.',
+      meta: 'ca. 5 km · mittelschwer · klassisch', href: 'https://www.oberstdorf.de/winter/langlaufen/loipe-tiefenbach.html', linkLabel: 'Loipeninfo', img: 'assets/tipp-loipe.jpg' },
+    { id: 'klamm-winter', cat: 'Winterwanderung', title: 'Die Breitachklamm im Eis.', imgHint: 'Foto · Eiszapfen in der Breitachklamm',
+      text: 'Im Winter wird die tiefste Felsenschlucht Mitteleuropas zum Eispalast: mächtige Eisvorhänge und Eiszapfen zum Greifen nah. Der Weg ist gut gesichert und familientauglich. Abends gibt es Fackelwanderungen.',
+      meta: '20 Min. zu Fuß bis zum Eingang · Dezember bis März', href: 'https://www.breitachklamm.com/jahreszeiten/winter.html', linkLabel: 'Breitachklamm', img: 'assets/tipp-klamm-winter.jpeg' },
+    { id: 'therme', cat: 'Entspannen', title: 'Oberstdorf Therme.', imgHint: 'Foto · Oberstdorf Therme',
+      text: 'Nach dem Skitag ins warme Wasser: Thermal- und Saunalandschaft mitten in Oberstdorf, mit Blick auf die verschneiten Berge.',
+      meta: 'Oberstdorf · ca. 15 Min. mit Bus oder Auto', href: 'https://www.oberstdorf-therme.de/', linkLabel: 'Zur Therme', img: 'assets/tipp-therme.jpg' }
+  ]
+};
+const ESRI = 'https://server.arcgisonline.com/ArcGIS/rest/services/';
+const FAQS = [
+  { q: 'Kann ich auch im Winter kostenlos die Bergbahnen benutzen?', a: 'Nein, das Angebot Bergbahn Unlimited gilt nur von Mai bis Anfang November und ermöglicht somit ausschließlich in diesem Zeitraum die kostenlose Nutzung der Bergbahnen.' },
+  { q: 'Ist die Hörnerbahn beim Bergbahn-Unlimited-Angebot dabei?', a: 'Nein, die Hörnerbahn ist nicht dabei. Bergbahn Unlimited ermöglicht die kostenlose Nutzung der Bergbahnen Oberstdorf & Kleinwalsertal, nicht die der Hörnergruppe.' },
+  { q: 'Gibt es eine Ermäßigung auf den Skipass?', a: 'Ja, mit dem Allgäu-Walser-Pass erhalten Sie eine Ermäßigung auf Skipässe, jedoch grundsätzlich erst ab einem 3-Tages-Skipass. Gut zu wissen: Die Skipässe können auch digital in der Allgäu-Walser-App gekauft werden. Dann einfach an den Pick-Up-Automaten an den Talstationen der Bergbahnen abholen.' },
+  { q: 'Wo finde ich eine Übersicht über alle Vorteile des Gästepasses?', a: 'Eine Übersicht aller kostenlosen und ermäßigten Leistungen finden Sie bei Oberstdorf Tourismus.', href: 'https://www.oberstdorf.de/information/tourist-information/gaestepass/', linkLabel: 'Zur Übersicht' },
+  { q: 'Wann erhalte ich den Allgäu-Walser-Pass?', a: 'Sie erhalten eine E-Mail von uns, in der Sie zum Online-Check-In gebeten werden. Sobald Sie diesen gemacht haben, bekommen Sie Ihren individuellen Gästepass per Mail zugeschickt. Diesen können Sie direkt in der Allgäu-Walser-App aktivieren. Sie werden durch die einzelnen Schritte zur Aktivierung geleitet.' }
+];
+const TILES = {
+  'Topo': { layers: [{ url: 'https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png', max: 17 }], attr: '© OpenStreetMap · © OpenTopoMap (CC-BY-SA)', filter: 'sepia(0.22) saturate(0.85) brightness(1.03)' },
+  'Topo Esri': { layers: [{ url: ESRI + 'World_Topo_Map/MapServer/tile/{z}/{y}/{x}', max: 19 }], attr: 'Tiles © Esri', filter: 'sepia(0.18) saturate(0.85)' },
+  'Relief': { layers: [
+      { url: ESRI + 'Elevation/World_Hillshade/MapServer/tile/{z}/{y}/{x}', max: 16 },
+      { url: ESRI + 'Reference/World_Transportation/MapServer/tile/{z}/{y}/{x}', max: 19, opacity: 0.55 },
+      { url: ESRI + 'Reference/World_Boundaries_and_Places/MapServer/tile/{z}/{y}/{x}', max: 19 }
+    ], attr: 'Tiles © Esri', filter: 'sepia(0.45) saturate(0.9) brightness(1.06)' },
+  'Hell': { layers: [{ url: ESRI + 'Canvas/World_Light_Gray_Base/MapServer/tile/{z}/{y}/{x}', max: 16 }], attr: 'Tiles © Esri', filter: 'sepia(0.3) saturate(0.9)' }
+};
+
+class Component extends DCLogic {
+  state = { season: null, active: -1 };
+  mapRef = React.createRef();
+
+  season() { return this.state.season ?? ((this.props.defaultSeason ?? 'Sommer') === 'Winter' ? 'winter' : 'sommer'); }
+
+  componentDidMount() {
+    this.onResize = () => {
+      const m = window.innerWidth <= 720;
+      const w = window.innerWidth >= 1040;
+      if (m !== this.state.mobile || w !== this.state.wide) this.setState({ mobile: m, wide: w, menu: m ? this.state.menu : false });
+      if (this.map) {
+        if (this._built) this.map.invalidateSize(); else this.ensureBuilt(0);
+        if (this.map.dragging) { if (this.isTouchPhone()) this.map.dragging.disable(); else this.map.dragging.enable(); }
+      }
+    };
+    this.onScroll = () => {
+      const s = window.scrollY > 40, p = window.scrollY > window.innerHeight * 0.6;
+      if (s !== this.state.scrolled || p !== this.state.pill) this.setState({ scrolled: s, pill: p });
+    };
+    window.addEventListener('resize', this.onResize);
+    window.addEventListener('scroll', this.onScroll, { passive: true });
+    this.onResize(); this.onScroll();
+    let n = 0;
+    this.poll = setInterval(() => { this.onResize(); if (++n > 20) clearInterval(this.poll); }, 300);
+    try { this.waitL(); } catch (e) { console.warn('map init', e && e.message); }
+  }
+  componentWillUnmount() {
+    clearTimeout(this.t); clearTimeout(this.tb); clearInterval(this.poll); if (this.ro) this.ro.disconnect(); if (this.map) this.map.remove();
+    window.removeEventListener('resize', this.onResize);
+    window.removeEventListener('scroll', this.onScroll);
+    document.body.style.overflow = '';
+  }
+  isTouchPhone() { return ('ontouchstart' in window || navigator.maxTouchPoints > 0) && window.innerWidth <= 720; }
+  setMenu(open) {
+    document.body.style.overflow = open ? 'hidden' : '';
+    this.setState({ menu: open });
+  }
+  waitL() {
+    if (window.L && this.mapRef.current) this.initMap();
+    else this.t = setTimeout(() => this.waitL(), 100);
+  }
+
+  initMap() {
+    const L = window.L;
+    this.map = L.map(this.mapRef.current, { scrollWheelZoom: true, wheelPxPerZoomLevel: 90, zoomSnap: 0.25, touchZoom: true, doubleClickZoom: true, dragging: !this.isTouchPhone(), tap: false }).setView(HOME, 12);
+    this.setTiles();
+    const home = L.divIcon({ className: '', iconSize: [160, 52], iconAnchor: [80, 48], html:
+      '<div style="display:flex;flex-direction:column;align-items:center">' +
+      '<div style="background:#2C2620;color:#F4EFE6;font:400 11px/1 Marcellus,serif;letter-spacing:.22em;text-transform:uppercase;padding:7px 10px;border-radius:4px;white-space:nowrap">Hier wohnen Sie</div>' +
+      '<div style="width:2px;height:10px;background:#2C2620"></div>' +
+      '<div style="width:18px;height:18px;border-radius:50%;background:#A8C617;border:3px solid #FAF8F2;box-shadow:0 2px 8px rgba(44,38,32,.4)"></div></div>' });
+    this.homeMarker = L.marker(HOME, { icon: home, zIndexOffset: 1000, keyboard: false }).addTo(this.map);
+    this.layer = L.layerGroup().addTo(this.map);
+    this._s = this.season();
+    this.ro = new ResizeObserver(() => {
+      if (!this.map) return;
+      const el = this.mapRef.current;
+      if (!el || !el.clientWidth || !el.clientHeight) return;
+      this.map.invalidateSize();
+      if (!this._built) this.ensureBuilt(0);
+    });
+    this.ro.observe(this.mapRef.current);
+    this.ensureBuilt(0);
+  }
+
+  ensureBuilt(tries) {
+    clearTimeout(this.tb);
+    if (!this.map) return;
+    const cur = this.mapRef.current;
+    if (cur && this.map.getContainer() !== cur) {
+      try { this.ro && this.ro.disconnect(); this.map.remove(); } catch (e) {}
+      this.map = null; this.tiles = null; this._built = false;
+      this.initMap();
+      return;
+    }
+    const el = this.map.getContainer();
+    const ok = el.isConnected && el.clientWidth > 0 && el.clientHeight > 0;
+    if (ok) {
+      this.map.invalidateSize();
+      if (!this._built) {
+        try { this.buildMarkers(); this._built = true; }
+        catch (e) { console.warn('buildMarkers', e && e.message); }
+      }
+    }
+    if ((!this._built || tries < 8) && tries < 200) this.tb = setTimeout(() => this.ensureBuilt(tries + 1), 300);
+  }
+
+  setTiles() {
+    const L = window.L;
+    const key = this.props.mapStyle ?? 'Topo';
+    (this.tiles || []).forEach(t => this.map.removeLayer(t));
+    const t = TILES[key] || TILES['Topo'];
+    this.tiles = t.layers.map((l, i) => L.tileLayer(l.url, { attribution: i === 0 ? t.attr : '', maxZoom: 17, maxNativeZoom: l.max, opacity: l.opacity ?? 1, subdomains: 'abc' }).addTo(this.map));
+    const winter = this.season() === 'winter';
+    if (winter) this.tiles.push(L.tileLayer('https://tiles.opensnowmap.org/pistes/{z}/{x}/{y}.png', { attribution: 'Pisten © OpenSnowMap', maxZoom: 17, maxNativeZoom: 18, zIndex: 10 }).addTo(this.map));
+    const pane = this.map.getPane('tilePane');
+    if (pane) pane.style.filter = winter ? 'saturate(0.45) brightness(1.1) contrast(0.95)' : t.filter;
+    this._style = key; this._tileSeason = winter;
+  }
+
+  icon(n, on) {
+    const s = on ? 34 : 28;
+    return window.L.divIcon({ className: '', iconSize: [s, s], iconAnchor: [s / 2, s / 2], html:
+      '<div style="width:' + s + 'px;height:' + s + 'px;border-radius:50%;display:flex;align-items:center;justify-content:center;font:400 ' + (on ? 15 : 13) + 'px/1 Marcellus,serif;' +
+      'background:' + (on ? '#A8C617' : '#FFFFFF') + ';color:' + (on ? '#1F1B17' : '#7A5C3C') + ';border:1.5px solid ' + (on ? '#A8C617' : '#7A5C3C') + ';box-shadow:0 2px 6px rgba(44,38,32,.25);cursor:pointer">' + n + '</div>' });
+  }
+
+  buildMarkers() {
+    const L = window.L;
+    this.layer.clearLayers();
+    this.markers = [];
+    const list = POIS[this.season()];
+    const pts = [HOME];
+    let n = 0;
+    list.forEach((p, i) => {
+      if (p.home) { this.markers[i] = null; return; }
+      n++;
+      const m = L.marker(p.ll, { icon: this.icon(n, false) })
+        .bindTooltip(p.name, { className: 'la-tip', direction: 'top', offset: [0, -16] })
+        .on('click', () => this.setState({ active: i }))
+        .on('mouseover', () => this.setState({ active: i }));
+      m._n = n;
+      m.addTo(this.layer);
+      this.markers[i] = m;
+      pts.push(p.ll);
+    });
+    const b = L.latLngBounds(pts);
+    if (this._built) this.map.flyToBounds(b, { padding: [50, 50], duration: 0.6 });
+    else this.map.fitBounds(b, { padding: [50, 50], animate: false });
+  }
+
+  updateIcons(prev) {
+    const a = this.state.active;
+    [prev, a].forEach(i => {
+      const m = this.markers && this.markers[i];
+      if (m) { m.setIcon(this.icon(m._n, i === a)); m.setZIndexOffset(i === a ? 500 : 0); }
+    });
+  }
+
+  componentDidUpdate(pp, ps) {
+    if (!this.map) return;
+    if ((this.props.mapStyle ?? 'Topo') !== this._style) this.setTiles();
+    const s = this.season();
+    if (s !== this._s) { this._s = s; this.setTiles(); if (this._built) this.buildMarkers(); return; }
+    if (ps.active !== this.state.active) this.updateIcons(ps.active);
+  }
+
+  focus(i) {
+    this.setState({ active: i });
+    if (!this.map) return;
+    const p = POIS[this.season()][i];
+    const m = this.markers[i];
+    clearTimeout(this.tipT);
+    (this.markers || []).forEach(x => { if (x && x !== m) x.closeTooltip(); });
+    this.map.flyTo(p.home ? HOME : p.ll, 14, { duration: 0.6 });
+    if (m) this.tipT = setTimeout(() => {
+      (this.markers || []).forEach(x => { if (x && x !== m) x.closeTooltip(); });
+      m.openTooltip();
+    }, 650);
+  }
+
+  renderVals() {
+    const season = this.season();
+    const a = this.state.active;
+    let n = 0;
+    const items = POIS[season].map((p, i) => {
+      const on = i === a;
+      if (!p.home) n++;
+      return {
+        ...p,
+        label: p.home ? 'H' : String(n),
+        bg: on ? 'var(--color-altpapier-warm)' : 'transparent',
+        numBg: on ? '#A8C617' : '#FFFFFF',
+        numColor: on ? '#1F1B17' : 'var(--color-eichen)',
+        numBorder: on ? '#A8C617' : 'var(--color-eichen)',
+        onEnter: () => { if (this.state.active !== i) this.setState({ active: i }); },
+        onClick: () => this.focus(i)
+      };
+    });
+    const pick = s => () => { if (s !== season) this.setState({ season: s, active: -1 }); };
+    const on = 'var(--color-text-primary)', off = 'var(--color-text-muted)';
+    const mobile = typeof window !== 'undefined' ? window.innerWidth <= 720 : !!this.state.mobile, menu = !!this.state.menu, scrolled = !!this.state.scrolled;
+    const LINKS = [
+      ['index.html#wohnungen', 'Wohnen'], ['index.html#hier-wohnen-sie', 'Das Haus'], ['index.html#tipps', 'Aktivitäten'],
+      ['#lage', 'Lage & Aktivitäten'], ['index.html#faq', 'Häufige Fragen'], ['index.html#kontakt', 'Kontakt']
+    ];
+    const header = {
+      isMobile: mobile, showNav: !mobile, menuLabel: menu ? 'Menü schließen' : 'Menü öffnen',
+      toggleMenu: () => this.setMenu(!menu), closeMenu: () => this.setMenu(false),
+      headerBg: menu ? 'transparent' : (scrolled ? 'rgba(244,239,230,0.72)' : 'rgba(244,239,230,0.92)'),
+      headerBlur: menu ? 'none' : 'saturate(160%) blur(14px)',
+      headerLine: menu ? 'transparent' : 'var(--color-border-subtle)',
+      logoFilter: menu ? 'brightness(0) invert(1)' : 'none',
+      burgerRot: menu ? 'rotate(90deg)' : 'none', lineColor: menu ? '#F4EFE6' : 'var(--color-text-primary)',
+      l1Top: menu ? '21px' : '14px', l3Top: menu ? '21px' : '28px',
+      l1Tf: menu ? 'rotate(45deg)' : 'none', l3Tf: menu ? 'rotate(-45deg)' : 'none', l2Op: menu ? 0 : 1,
+      menuClip: menu ? 'circle(150vmax at calc(100% - 3rem) 35px)' : 'circle(0px at calc(100% - 3rem) 35px)',
+      menuPE: menu ? 'auto' : 'none',
+      menuLinks: LINKS.map(([href, label], i) => ({ href, label, num: '0' + (i + 1),
+        op: menu ? 1 : 0, tf: menu ? 'none' : 'translateY(14px)', delay: (menu ? 0.18 + i * 0.05 : 0) + 's' }))
+    };
+    const pill = !!this.state.pill && !menu;
+    const wide = typeof window !== 'undefined' ? window.innerWidth >= 1040 : !!this.state.wide;
+    const layout = {
+      mapPos: wide ? 'sticky' : 'static', mapTop: wide ? '100px' : 'auto', mapAspect: mobile ? '1 / 1' : '5 / 4', mapGap: mobile ? '2rem' : '3rem 4rem',
+      listGap: mobile ? '0.75rem' : '1rem', stripOffset: wide ? '2.5rem' : '0',
+      stripCols: mobile ? 'repeat(3, 78%)' : 'repeat(auto-fit, minmax(min(100%, 260px), 1fr))',
+      stripOverflow: mobile ? 'auto' : 'visible', stripBleed: mobile ? '-1.5rem' : '0', stripPad: mobile ? '1.5rem' : '0', distMax: mobile ? '7.5rem' : 'none'
+    };
+    const faqOpen = this.state.faq ?? -1;
+    const faqs = FAQS.map((f, i) => {
+      const open = i === faqOpen;
+      return { ...f, href: f.href || '', linkLabel: f.linkLabel || '', open,
+        plusColor: open ? '#A8C617' : 'var(--color-eichen)', plusTf: open ? 'rotate(45deg)' : 'none',
+        toggle: () => this.setState({ faq: open ? -1 : i }) };
+    });
+    return {
+      ...header, ...layout, faqs,
+      pillTf: pill ? 'none' : 'translateY(140px) scale(.92)', pillOp: pill ? 1 : 0, pillPE: pill ? 'auto' : 'none',
+      mapRef: this.mapRef,
+      items,
+      tipps: TIPPS[season].map(t => ({ ...t, img: t.img || '', slotId: 'tipp-' + t.id, note: t.note || '', href: t.href || '' })),
+      listEyebrow: 'In der Umgebung',
+      pickSommer: pick('sommer'),
+      pickWinter: pick('winter'),
+      sommerColor: season === 'sommer' ? on : off,
+      winterColor: season === 'winter' ? on : off,
+      sommerLine: season === 'sommer' ? '#A8C617' : 'transparent',
+      winterLine: season === 'winter' ? '#A8C617' : 'transparent'
+    };
+  }
+}
+</script>
+</body>
+</html>

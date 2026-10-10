@@ -11,7 +11,7 @@ function Header() {
         </a>
         <nav className="nav">
           <a href="#wohnungen">Wohnen</a>
-          <a href="#tipps">Aktivitäten</a>
+          <a href="lage-und-aktivitaeten.html">Lage & Aktivitäten</a>
           <a href="#lage">Kontakt</a>
           <a href={TRAMINO} target="_blank" rel="noopener" className="nav-btn">Buchen</a>
         </nav>
@@ -93,7 +93,7 @@ function HeaderScrollAware() {
           </a>
           <nav className="nav">
             <a href="#wohnungen">Wohnen</a>
-            <a href="#tipps">Aktivitäten</a>
+            <a href="lage-und-aktivitaeten.html">Lage & Aktivitäten</a>
             <a href="#lage">Kontakt</a>
             <a href={TRAMINO} target="_blank" rel="noopener" className="nav-btn">Buchen</a>
           </nav>
@@ -140,8 +140,7 @@ function MobileMenu({ open, origin, onClose }) {
   const links = [
   { href: "#wohnungen", label: "Wohnen" },
   { href: "#hier-wohnen-sie", label: "Das Haus" },
-  { href: "#tipps", label: "Aktivitäten" },
-  { href: "#lage", label: "Anreise & Lage" },
+  { href: "lage-und-aktivitaeten.html", label: "Lage & Aktivitäten" },
   { href: "#faq", label: "Häufige Fragen" },
   { href: "#kontakt", label: "Kontakt" }];
 
@@ -617,7 +616,7 @@ function Footer() {
             <h5>Service</h5>
             <ul>
               <li><a href="#bergbahn">Bergbahn-Ticket</a></li>
-              <li><a href="#lage">Lage & Region</a></li>
+              <li><a href="lage-und-aktivitaeten.html">Lage & Aktivitäten</a></li>
               <li><a href="#faq">Häufige Fragen</a></li>
               <li><a href="#gastgeber">Kontakt & Anfrage</a></li>
             </ul>
