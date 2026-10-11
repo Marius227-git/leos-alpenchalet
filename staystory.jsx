@@ -1,10 +1,11 @@
-// StayStory — In-Page-App (Grundgerüst v5)
-const SS_STORIES = [
-  { id: 'chalet', label: 'Ihr Chalet', icon: <svg viewBox="0 0 24 24"><path d="M4 11l8-7 8 7" /><path d="M6 10v9h12v-9" /><path d="M10 19v-5h4v5" /></svg> },
-  { id: 'lage', label: 'Lage', icon: <svg viewBox="0 0 24 24"><path d="M12 21s-6-5.2-6-10a6 6 0 1 1 12 0c0 4.8-6 10-6 10Z" /><circle cx="12" cy="11" r="2.2" /></svg> },
-  { id: 'bergbahn', label: 'Bergbahn Inklusive', icon: <svg viewBox="0 0 24 24"><path d="M3 5h18M12 3v2M7 6l-1 3h12l-1-3" /><path d="M6 9h12v6a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2Z" /></svg> },
-  { id: 'lade', label: 'Ladesäule', icon: <svg viewBox="0 0 24 24"><path d="M13 2 6 13h5l-1 9 7-11h-5l1-9Z" /></svg> },
-  { id: 'ski', label: 'Ski-/Fahrradraum', icon: <svg viewBox="0 0 24 24"><circle cx="5.5" cy="17.5" r="3.2" /><circle cx="18.5" cy="17.5" r="3.2" /><path d="M5.5 17.5 9 10.5h6.5M9 10.5l3.5 7 3-7.5M14 8h2.5M15.5 8l3 9.5" /></svg> }
+// StayStory — In-Page-App (v6: geführter Flow)
+const SS_HAUS = [
+  { ic: 'cablecar', label: 'Bergbahn inklusive', sub: 'Alle 8 Bahnen, Mai bis Oktober' },
+  { ic: 'bolt', label: 'E-Ladestation', sub: 'Direkt am Haus' },
+  { ic: 'park', label: 'Parkplatz', sub: 'Am Haus, teils überdacht' },
+  { ic: 'bike', label: 'Ski- & Fahrradraum', sub: 'Großer Schuppen am Haus' },
+  { ic: 'lock', label: 'Check-in per Code', sub: 'Ab 15 Uhr, ohne Schlüsselübergabe' },
+  { ic: 'pin', label: 'Ruhige Ortsrandlage', sub: 'Breitachklamm zu Fuß erreichbar' }
 ];
 
 const SS_APT = {
@@ -14,18 +15,14 @@ const SS_APT = {
       { id: 'schlafen', label: 'Schlafen', front: '#3f5233', video: 'https://iframe.mediadelivery.net/embed/745048/b9c13145-f4d5-4ee2-b9f3-c95eed6f5794?autoplay=true&loop=true&muted=true&preload=true&responsive=true', poster: 'https://vz-824476f1-c1c.b-cdn.net/b9c13145-f4d5-4ee2-b9f3-c95eed6f5794/thumbnail.jpg', hand: 'Zwei Schlafzimmer', h: 'Schlafen', p: 'Zwei separate Schlafzimmer mit Doppelbett und zwei Einzelbetten — ideal für Familien. Verdunkelung und hochwertige Matratzen in beiden Räumen.', icon: <svg viewBox="0 0 24 24"><path d="M3 18 V9 a2 2 0 0 1 2-2 h14 a2 2 0 0 1 2 2 V18 M3 14 H21 M3 18 v2 M21 18 v2" /></svg> },
       { id: 'bad', label: 'Bad', front: '#4A5D3A', video: 'https://iframe.mediadelivery.net/embed/745048/cca9b719-881c-419c-87dd-f5a61bd76fa4?autoplay=true&loop=true&muted=true&preload=true&responsive=true', poster: 'https://vz-824476f1-c1c.b-cdn.net/cca9b719-881c-419c-87dd-f5a61bd76fa4/thumbnail.jpg', hand: 'Frisch & hell', h: 'Bad', p: 'Modernes Bad mit bodengleicher Dusche, Handtüchern und Föhn — alles bereit, wenn Sie vom Berg zurückkommen.', icon: <svg viewBox="0 0 24 24"><path d="M3 12 H21 V14 a5 5 0 0 1-5 5 H8 a5 5 0 0 1-5-5 Z M6 12 V6 a2 2 0 0 1 4 0 M7 19 l-1 2 M17 19 l1 2" /></svg> },
       { id: 'kochen', label: 'Kochen', front: '#5a6b47', video: 'https://iframe.mediadelivery.net/embed/745048/18253bce-9f77-4b22-86d7-d7088e603d7e?autoplay=true&loop=true&muted=true&preload=true&responsive=true', poster: 'https://vz-824476f1-c1c.b-cdn.net/18253bce-9f77-4b22-86d7-d7088e603d7e/thumbnail.jpg', hand: 'Voll ausgestattet', h: 'Kochen', p: 'Moderne Küche mit Induktion, Backofen und Spülmaschine, dazu ein großer Esstisch für alle — vom ersten Kaffee bis zum Abendessen.', icon: <svg viewBox="0 0 24 24"><path d="M3 2v7c0 1.1.9 2 2 2h0a2 2 0 0 0 2-2V2 M7 2v20 M21 15V2a5 5 0 0 0-5 5v6c0 1.1.9 2 2 2h3Z M21 15v7" /></svg> },
-      { id: 'ausblick', label: 'Terrasse', front: '#4A5D3A', video: 'https://iframe.mediadelivery.net/embed/745048/8455a7ae-9a2f-42aa-8f83-374b1537ffea?autoplay=true&loop=true&muted=true&preload=true&responsive=true', poster: 'https://vz-824476f1-c1c.b-cdn.net/8455a7ae-9a2f-42aa-8f83-374b1537ffea/thumbnail.jpg', hand: 'Große Terrasse zum Garten', h: 'Terrasse', p: 'Südost-Terrasse mit direktem Zugang zum Garten — Morgensonne beim Frühstück und Blick in die Allgäuer Berge.', icon: <svg viewBox="0 0 24 24"><path d="M3 18 L9 8 L13 14 L17 6 L21 18 Z" /></svg> },
-      { id: 'extras', label: 'Extras', front: '#3f5233', hand: 'Alles inklusive', h: 'Extras', p: 'Dazu alles, was Ihren Aufenthalt leichter macht:', chips: ['Codeschloss', 'E-Ladestation', 'Ski-/Fahrradraum', 'Bergbahn Inklusive'], icon: <svg viewBox="0 0 24 24"><path d="M12 3l2.5 5.3 5.5.8-4 4 1 5.9-5-2.8-5 2.8 1-5.9-4-4 5.5-.8Z" /></svg> }
-    ]
+      { id: 'ausblick', label: 'Terrasse', front: '#4A5D3A', video: 'https://iframe.mediadelivery.net/embed/745048/8455a7ae-9a2f-42aa-8f83-374b1537ffea?autoplay=true&loop=true&muted=true&preload=true&responsive=true', poster: 'https://vz-824476f1-c1c.b-cdn.net/8455a7ae-9a2f-42aa-8f83-374b1537ffea/thumbnail.jpg', hand: 'Große Terrasse zum Garten', h: 'Terrasse', p: 'Südost-Terrasse mit direktem Zugang zum Garten — Morgensonne beim Frühstück und Blick in die Allgäuer Berge.', icon: <svg viewBox="0 0 24 24"><path d="M3 18 L9 8 L13 14 L17 6 L21 18 Z" /></svg> }    ]
   },
   gaisberg: {
     stories: [
       { id: 'wohnen', label: 'Wohnen', front: '#4A5D3A', hand: 'Altholz & warmes Licht', h: 'Wohnen', p: 'Offener Wohnbereich mit viel Altholz, gemütlicher Sitzecke und Smart-TV. Auf 44 m² finden Sie alles, was Sie für entspannte Tage brauchen.', icon: <svg viewBox="0 0 24 24"><path d="M4 11 V18 H20 V11 M3 11 H21 M6 11 V8 a2 2 0 0 1 2-2 h8 a2 2 0 0 1 2 2 v3" /></svg> },
       { id: 'schlafen', label: 'Schlafen', front: '#3f5233', hand: 'Ruhige Lage im Erdgeschoss', h: 'Schlafen', p: 'Das Schlafzimmer mit Doppelbett liegt zur ruhigen Seite. Verdunkelung und hochwertige Matratzen sorgen für erholsamen Schlaf.', icon: <svg viewBox="0 0 24 24"><path d="M3 18 V9 a2 2 0 0 1 2-2 h14 a2 2 0 0 1 2 2 V18 M3 14 H21 M3 18 v2 M21 18 v2" /></svg> },
       { id: 'kochen', label: 'Kochen', front: '#5a6b47', hand: 'Voll ausgestattet', h: 'Kochen', p: 'Moderne Küche mit Induktion, Spülmaschine und allem, was Selbstversorger brauchen — vom ersten Kaffee bis zum Abendessen.', icon: <svg viewBox="0 0 24 24"><path d="M3 2v7c0 1.1.9 2 2 2h0a2 2 0 0 0 2-2V2 M7 2v20 M21 15V2a5 5 0 0 0-5 5v6c0 1.1.9 2 2 2h3Z M21 15v7" /></svg> },
-      { id: 'ausblick', label: 'Ausblick', front: '#4A5D3A', hand: 'Terrasse mit Gartenzugang', h: 'Ausblick', p: 'Große West-Terrasse mit direktem Zugang zum Garten — perfekt für die Abendsonne mit Blick in die Allgäuer Berge.', icon: <svg viewBox="0 0 24 24"><path d="M3 18 L9 8 L13 14 L17 6 L21 18 Z" /></svg> },
-      { id: 'extras', label: 'Extras', front: '#3f5233', hand: 'Alles inklusive', h: 'Extras', p: 'Dazu alles, was Ihren Aufenthalt leichter macht:', chips: ['Codeschloss', 'E-Ladestation', 'Ski-/Fahrradraum', 'Bergbahn Inklusive'], icon: <svg viewBox="0 0 24 24"><path d="M12 3l2.5 5.3 5.5.8-4 4 1 5.9-5-2.8-5 2.8 1-5.9-4-4 5.5-.8Z" /></svg> }
-    ]
+      { id: 'ausblick', label: 'Ausblick', front: '#4A5D3A', hand: 'Terrasse mit Gartenzugang', h: 'Ausblick', p: 'Große West-Terrasse mit direktem Zugang zum Garten — perfekt für die Abendsonne mit Blick in die Allgäuer Berge.', icon: <svg viewBox="0 0 24 24"><path d="M3 18 L9 8 L13 14 L17 6 L21 18 Z" /></svg> }    ]
   }
 };
 
@@ -61,41 +58,113 @@ function SSVideo({ src, poster, full }) {
     </div>);
 }
 
-function SSAptScreen({ w, onBack, full, setFull }) {
+function SSAptScreen({ w, full, setFull, onTag }) {
   const conf = SS_APT[w.id];
-  const [sid, setSid] = React.useState(conf.stories[0].id);
-  const st = conf.stories.find((s) => s.id === sid);
+  const [sid, setSid] = React.useState(conf ? conf.stories[0].id : null);
+  const st = conf ? conf.stories.find((s) => s.id === sid) : null;
+  const video = st && st.video;
   return (
     <div className="ss2-scroll">
-      <button className="ss2-back" onClick={onBack}>← Wohnungen</button>
       <div className={"ss2-stage" + (full ? " is-full" : "")}>
-        {st.video ? <SSVideo key={st.id} src={st.video} poster={st.poster} full={full} /> : <StayPano frontFill={st.front} />}
+        {video ? <SSVideo key={st.id} src={st.video} poster={st.poster} full={full} /> : <img className="ss2-stage-img" src={w.img} alt={"Wohnung " + w.name} />}
         <div className="ss2-stage-scrim"></div>
         <div className="ss2-stage-tag">
-          <div className="ss2-hand">{st.label}</div>
+          <div className="ss2-hand">{video ? st.label : w.eyebrow}</div>
           <div className="ss2-stage-name">Wohnung {w.name}</div>
         </div>
-        {!st.video && <div className="ss2-stage-note">Immersives Video — folgt</div>}
-        {!full && <button className="ss2-fullscreen" onClick={() => setFull(true)} aria-label="Vollbild">
+        {video && !full && <button className="ss2-fullscreen" onClick={() => setFull(true)} aria-label="Vollbild">
           <svg viewBox="0 0 24 24"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5" /></svg>
         </button>}
         {full && <button className="ss2-full-x" onClick={() => setFull(false)} aria-label="Vollbild schließen">×</button>}
       </div>
-      <div className="ss2-stories">
+      {conf && <div className="ss2-stories">
         {conf.stories.map((s) =>
         <button key={s.id} className={"ss2-story" + (sid === s.id ? " on" : "")} onClick={() => setSid(s.id)}>
             <span className="ss2-story-ring"><span className="ss2-story-icon">{s.icon}</span></span>
             <span className="ss2-story-lbl">{s.label}</span>
           </button>
         )}
-      </div>
+      </div>}
       <div className="ss2-body">
-        <h3>{st.h}</h3>
-        <div className="ss2-hand ss2-body-sub">{st.hand}</div>
-        <p>{st.p}</p>
-        {st.chips && <div className="ss2-chips">{st.chips.map((c) => <span key={c}>{c}</span>)}</div>}
-        <p className="ss2-apt-meta">{w.meta}</p>
+        <h3>{st ? st.h : w.name}</h3>
+        <div className="ss2-hand ss2-body-sub">{st ? st.hand : w.tagline}</div>
+        {st && <p>{st.p}</p>}
+        <div className="ss2-chips">{w.meta.split(' · ').map((c) => <span key={c}>{c}</span>)}</div>
       </div>
+      <div className="ss2-sec">
+        <div className="ss2-sec-h">Bei jeder Wohnung dabei</div>
+        <div className="ss2-haus">
+          {SS_HAUS.map((f) =>
+          <div className="ss2-haus-i" key={f.ic}>
+              <span className="ss2-haus-ic"><SSIcon k={f.ic} /></span>
+              <span className="ss2-haus-tx"><b>{f.label}</b><span>{f.sub}</span></span>
+            </div>
+          )}
+        </div>
+      </div>
+      <button className="ss2-tagteaser" onClick={onTag}>
+        <span className="ss2-tagteaser-tx"><span className="ss2-hand">Ihr Tag bei uns</span><b>So könnte Ihr Tag hier aussehen</b></span>
+        <span className="ss2-persona-go">→</span>
+      </button>
+    </div>);
+}
+
+function SSAsk({ onPick }) {
+  return (
+    <div className="ss2-ask">
+      <div className="ss2-hand">Herzlich willkommen</div>
+      <h3>Zu wie vielen<br />kommen Sie?</h3>
+      <p>Wir zeigen Ihnen die Wohnungen, die zu Ihnen passen.</p>
+      <div className="ss2-ask-grid">
+        {[1, 2, 3, 4].map((n) =>
+        <button key={n} onClick={() => onPick(n)}>
+            <b>{n}</b><span>{n === 1 ? 'Person' : 'Personen'}</span>
+          </button>
+        )}
+      </div>
+      <button className="ss2-skip" onClick={() => onPick(0)}>Erst mal alle Wohnungen ansehen</button>
+    </div>);
+}
+
+const ssMaxP = (w) => +((w.meta.match(/–(\d+)\s*Personen/) || [])[1] || 4);
+
+function SSWCard({ w, onOpen }) {
+  return (
+    <button className="ss2-wcard" onClick={() => onOpen(w)}>
+      <span className="ss2-wcard-img"><img src={w.img} alt={"Wohnung " + w.name} /></span>
+      <span className="ss2-wcard-tx">
+        <span className="ss2-wcard-eyebrow">{w.eyebrow}</span>
+        <b>{w.name}</b>
+        <span className="ss2-wcard-tag">{w.tagline}</span>
+        <span className="ss2-wcard-meta">{w.meta}</span>
+      </span>
+      <span className="ss2-wcard-go">→</span>
+    </button>);
+}
+
+function SSList({ persons, onChangePersons, onOpen }) {
+  const all = window.LEOS_DATA.wohnungen;
+  let main = all, more = [];
+  if (persons) {
+    const fit = all.filter((w) => ssMaxP(w) >= persons);
+    const tight = Math.min(...fit.map(ssMaxP));
+    main = fit.filter((w) => ssMaxP(w) === tight);
+    more = fit.filter((w) => ssMaxP(w) !== tight);
+  }
+  return (
+    <div className="ss2-scroll">
+      <div className="ss2-whead">
+        <div className="ss2-hand">{persons ? 'Passend für Sie' : 'Sechs Wohnungen'}</div>
+        <h3>{persons ? 'Diese passen zu Ihnen' : 'Jede mit eigenem Charakter'}</h3>
+        <button className="ss2-persons" onClick={onChangePersons}>
+          {persons ? persons + ' ' + (persons === 1 ? 'Person' : 'Personen') + ' · ändern' : 'Personenzahl wählen'}
+        </button>
+      </div>
+      <div className="ss2-wlist">{main.map((w) => <SSWCard key={w.id} w={w} onOpen={onOpen} />)}</div>
+      {more.length > 0 && <>
+        <div className="ss2-group">Mit mehr Platz</div>
+        <div className="ss2-wlist">{more.map((w) => <SSWCard key={w.id} w={w} onOpen={onOpen} />)}</div>
+      </>}
     </div>);
 }
 
@@ -116,7 +185,12 @@ const SS_TI = {
   waves: '<path d="M2 8c2-2 4-2 6 0s4 2 6 0 4-2 6 0M2 13c2-2 4-2 6 0s4 2 6 0 4-2 6 0M2 18c2-2 4-2 6 0s4 2 6 0 4-2 6 0"/>',
   home: '<path d="M4 11l8-7 8 7"/><path d="M6 10v9h12v-9"/>',
   pool: '<path d="M2 17c2-2 4-2 6 0s4 2 6 0 4-2 6 0M6 14V6a2 2 0 0 1 4 0M14 14V6a2 2 0 0 1 4 0"/>',
-  pizza: '<path d="M12 3 3 20l9-3 9 3Z"/><path d="M11 10h.01M9 14h.01M14 14h.01"/>'
+  pizza: '<path d="M12 3 3 20l9-3 9 3Z"/><path d="M11 10h.01M9 14h.01M14 14h.01"/>',
+  bolt: '<path d="M13 2 6 13h5l-1 9 7-11h-5l1-9Z"/>',
+  park: '<rect x="4" y="3" width="16" height="18" rx="3"/><path d="M10 17V7h3a3 3 0 0 1 0 6h-3"/>',
+  bike: '<circle cx="5.5" cy="17.5" r="3.2"/><circle cx="18.5" cy="17.5" r="3.2"/><path d="M5.5 17.5 9 10.5h6.5M9 10.5l3.5 7 3-7.5M14 8h2.5M15.5 8l3 9.5"/>',
+  lock: '<rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/>',
+  pin: '<path d="M12 21s-6-5.2-6-10a6 6 0 1 1 12 0c0 4.8-6 10-6 10Z"/><circle cx="12" cy="11" r="2.2"/>'
 };
 const SSIcon = ({ k }) => <svg viewBox="0 0 24 24" dangerouslySetInnerHTML={{ __html: SS_TI[k] || '' }} />;
 const SS_PH = {
@@ -158,18 +232,17 @@ const SS_TAGE = [
   { id: 'familie', icon: 'family', title: 'Mit der Familie', sub: 'Für Große und Kleine', soon: true }
 ];
 
-function SSTag() {
-  const [day, setDay] = React.useState(null);
-  if (day === null) return (
+function SSTagList({ onPick }) {
+  return (
     <div className="ss2-scroll">
       <div className="ss2-whead">
         <div className="ss2-hand">Ihr Tag bei uns</div>
         <h3>Wie sieht Ihr<br />perfekter Tag aus?</h3>
-        <p className="ss2-whead-sub">Wählen Sie, wofür Sie kommen — wir nehmen Sie mit, vom Morgen bis in die Nacht.</p>
+        <p className="ss2-whead-sub">Wählen Sie, wofür Sie kommen. Wir nehmen Sie mit, vom Morgen bis in die Nacht.</p>
       </div>
       <div className="ss2-personas">
         {SS_TAGE.map((p, i) =>
-        <button key={p.id} className={"ss2-persona" + (p.soon ? " soon" : "")} onClick={() => { if (!p.soon) setDay(i); }}>
+        <button key={p.id} className={"ss2-persona" + (p.soon ? " soon" : "")} onClick={() => { if (!p.soon) onPick(i); }}>
             <span className="ss2-persona-pic"><SSIcon k={p.icon} /></span>
             <span className="ss2-persona-tx"><b>{p.title}</b><span>{p.sub}</span></span>
             {p.soon ? <span className="ss2-persona-soon">bald</span> : <span className="ss2-persona-go">→</span>}
@@ -177,11 +250,12 @@ function SSTag() {
         )}
       </div>
     </div>);
-  const p = SS_TAGE[day];
+}
+
+function SSTagDay({ p }) {
   return (
     <div className="ss2-scroll">
-      <button className="ss2-back" onClick={() => setDay(null)}>← Andere Tage</button>
-      <div className="ss2-whead" style={{ paddingTop: 0 }}>
+      <div className="ss2-whead">
         <div className="ss2-hand">Ihr Tag</div>
         <h3>{p.head}</h3>
         <p className="ss2-whead-sub">{p.intro}</p>
@@ -206,96 +280,6 @@ function SSTag() {
     </div>);
 }
 
-function SSStay() {
-  const [phase, setPhase] = React.useState('anreise');
-  const [copied, setCopied] = React.useState(false);
-  const copyWifi = () => {
-    try { navigator.clipboard.writeText('alpenchalet2026'); } catch (e) {}
-    setCopied(true); setTimeout(() => setCopied(false), 1800);
-  };
-  return (
-    <>
-      <div className="ss2-subtabs">
-        <button className={phase === 'anreise' ? 'on' : ''} onClick={() => setPhase('anreise')}>Anreise</button>
-        <button className={phase === 'aufenthalt' ? 'on' : ''} onClick={() => setPhase('aufenthalt')}>Aufenthalt</button>
-        <button className={phase === 'abreise' ? 'on' : ''} onClick={() => setPhase('abreise')}>Abreise</button>
-      </div>
-      {phase === 'anreise' && <div className="ss2-scroll">
-        <div className="ss2-whead">
-          <div className="ss2-hand">Willkommen, Familie Meier</div>
-          <h3>Ihre Anreise</h3>
-        </div>
-        <div className="ss2-cards">
-          <div className="ss2-info">
-            <b>Adresse</b>
-            <p>Rohrmooser Straße 22<br />87561 Oberstdorf-Tiefenbach</p>
-            <a className="ss2-info-btn" href="https://maps.apple.com/?q=Rohrmooser+Stra%C3%9Fe+22,+87561+Oberstdorf" target="_blank" rel="noopener">Route öffnen</a>
-          </div>
-          <div className="ss2-info ss2-info-accent">
-            <b>Codeschloss</b>
-            <p>Ihr Zugangscode ab Anreisetag, 15:00 Uhr:</p>
-            <div className="ss2-code">4 7 1 1 #</div>
-            <span className="ss2-info-note">Gilt für Haustür und Wohnung Gaisberg</span>
-          </div>
-          <div className="ss2-info">
-            <b>Parken</b>
-            <p>Ihr Stellplatz Nr. 3 direkt am Haus, teils überdacht. E-Ladestation daneben — Kabel liegt bereit.</p>
-          </div>
-          <div className="ss2-info">
-            <b>Check-in</b>
-            <p>Ab 15:00 Uhr, ganz ohne Schlüsselübergabe. Bei Fragen sind wir jederzeit erreichbar.</p>
-          </div>
-        </div>
-      </div>}
-      {phase === 'aufenthalt' && <div className="ss2-scroll">
-        <div className="ss2-whead">
-          <div className="ss2-hand">Schön, dass Sie da sind</div>
-          <h3>Ihr Aufenthalt</h3>
-        </div>
-        <div className="ss2-cards">
-          <div className="ss2-info ss2-info-accent">
-            <b>WLAN</b>
-            <p>Netz: <strong>Leos-Alpenchalet</strong><br />Passwort: <strong>alpenchalet2026</strong></p>
-            <button className="ss2-info-btn" onClick={copyWifi}>{copied ? 'Kopiert ✓' : 'Passwort kopieren'}</button>
-          </div>
-          <div className="ss2-info">
-            <b>Bergbahn Inklusive</b>
-            <p>Ihre Tickets liegen auf dem Esstisch. Alle 8 Bahnen in Oberstdorf &amp; Kleinwalsertal, täglich 8:30–16:30 Uhr.</p>
-          </div>
-          <div className="ss2-info">
-            <b>Brötchenservice</b>
-            <p>Bis 18:00 Uhr bestellen — frisch geliefert ab 7:30 Uhr vor Ihre Tür.</p>
-          </div>
-          <div className="ss2-info">
-            <b>Tipp für morgen</b>
-            <p>Es wird sonnig — perfekt für das Rohrmoostal, direkt ab Haustür. Bei Regen: Breitachklamm (30 Gehminuten), dann Oberstdorf Therme.</p>
-          </div>
-        </div>
-      </div>}
-      {phase === 'abreise' && <div className="ss2-scroll">
-        <div className="ss2-whead">
-          <div className="ss2-hand">Bis zum nächsten Mal</div>
-          <h3>Ihre Abreise</h3>
-        </div>
-        <div className="ss2-cards">
-          <div className="ss2-info">
-            <b>Check-out bis 10:00 Uhr</b>
-            <p>Geschirrspüler starten, Fenster schließen, Tür einfach zuziehen — das war's schon.</p>
-          </div>
-          <div className="ss2-info">
-            <b>Müll</b>
-            <p>Restmüll und Gelber Sack in die Tonnen am Schuppen, Glas bitte mitnehmen oder zum Container an der Dorfstraße.</p>
-          </div>
-          <div className="ss2-info ss2-info-accent">
-            <b>Hat es Ihnen gefallen?</b>
-            <p>Über eine Bewertung freuen wir uns sehr — und beim nächsten Mal buchen Sie am besten direkt bei uns.</p>
-            <a className="ss2-info-btn" href="#bewertungen" target="_blank" rel="noopener">Bewertung schreiben</a>
-          </div>
-        </div>
-      </div>}
-    </>);
-}
-
 function StayStoryIntro({ onDone }) {
   React.useEffect(() => {
     const t = setTimeout(onDone, 2100);
@@ -309,104 +293,47 @@ function StayStoryIntro({ onDone }) {
 }
 
 function StayStoryApp({ onClose, initialMode }) {
-  const [mode, setMode] = React.useState(initialMode || 'unterkunft');
-  const [tab, setTab] = React.useState('ueberblick');
-  const [story, setStory] = React.useState(null);
-  const [full, setFull] = React.useState(false);
+  const [stack, setStack] = React.useState(initialMode === 'tag' ? [{ k: 'ask' }, { k: 'tag' }] : [{ k: 'ask' }]);
   const [persons, setPersons] = React.useState(null);
-  const [apt, setApt] = React.useState(null);
+  const [full, setFull] = React.useState(false);
+  const cur = stack[stack.length - 1];
+  const push = (s) => setStack((st) => [...st, s]);
+  const back = () => { setFull(false); setStack((st) => st.length > 1 ? st.slice(0, -1) : st); };
   React.useEffect(() => {
     if (!full) return;
     const key = (e) => { if (e.key === 'Escape') { e.stopPropagation(); setFull(false); } };
     window.addEventListener('keydown', key, true);
     return () => window.removeEventListener('keydown', key, true);
   }, [full]);
+  const title = {
+    ask: 'Leos Alpenchalet',
+    list: 'Wohnungen',
+    apt: 'Wohnungen',
+    tag: 'Ihr Tag',
+    day: cur.i != null && SS_TAGE[cur.i].title
+  }[cur.k];
   return (
     <div className="ss2-app">
       <div className="ss2-topbar">
-        <div className="ss2-modes">
-          <button className={mode === 'unterkunft' ? 'on' : ''} onClick={() => setMode('unterkunft')}>Unterkunft</button>
-          <button className={mode === 'tag' ? 'on' : ''} onClick={() => setMode('tag')}>Ihr Tag</button>
-          <button className={mode === 'stay' ? 'on' : ''} onClick={() => setMode('stay')}>Ihr Aufenthalt</button>
-        </div>
+        {stack.length > 1 ?
+        <button className="ss2-nav" onClick={back} aria-label="Zurück"><svg viewBox="0 0 24 24"><path d="M15 5l-7 7 7 7" /></svg></button> :
+        <span className="ss2-nav-ph"></span>}
+        <div className="ss2-title">{title}</div>
         <button className="ss2-x" onClick={onClose} aria-label="StayStory schließen">×</button>
       </div>
-      {mode === 'unterkunft' && <div className="ss2-subtabs">
-        <button className={tab === 'ueberblick' ? 'on' : ''} onClick={() => setTab('ueberblick')}>Überblick</button>
-        <button className={tab === 'wohnungen' ? 'on' : ''} onClick={() => { setTab('wohnungen'); setApt(null); }}>Wohnungen</button>
-      </div>}
-      {mode === 'unterkunft' && tab === 'ueberblick' && <div className="ss2-scroll">
-        <div className={"ss2-stage" + (full ? " is-full" : "")}>
-          <StayPano frontFill="#3f5233" />
-          <div className="ss2-stage-scrim"></div>
-          <div className="ss2-stage-tag">
-            <div className="ss2-hand">{story ? SS_STORIES.find((s) => s.id === story).label : 'Willkommen'}</div>
-            <div className="ss2-stage-name">Leos Alpenchalet</div>
-          </div>
-          <div className="ss2-stage-note">Immersives Video — folgt</div>
-          {!full && <button className="ss2-fullscreen" onClick={() => setFull(true)} aria-label="Vollbild">
-            <svg viewBox="0 0 24 24"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5" /></svg>
-          </button>}
-          {full && <button className="ss2-full-x" onClick={() => setFull(false)} aria-label="Vollbild schließen">×</button>}
-        </div>
-        <div className="ss2-stories">
-          {SS_STORIES.map((s) =>
-          <button key={s.id} className={"ss2-story" + (story === s.id ? " on" : "")} onClick={() => setStory(s.id)}>
-              <span className="ss2-story-ring"><span className="ss2-story-icon">{s.icon}</span></span>
-              <span className="ss2-story-lbl">{s.label}</span>
-            </button>
-          )}
-        </div>
-        <div className="ss2-body">
-          <h3>Ankommen &amp; Durchatmen</h3>
-          <div className="ss2-hand ss2-body-sub">Alpenchalet in ruhiger Lage</div>
-          <p>In erhöhter Ortsrandlage von Tiefenbach, mit freiem Blick ins Alpenpanorama. Sechs neu renovierte Wohnungen, große Balkone, viel Altholz — und die Breitachklamm vor der Haustür.</p>
-        </div>
-      </div>}
-      {mode === 'unterkunft' && tab === 'wohnungen' && persons === null && <div className="ss2-ask">
-        <div className="ss2-hand">Wohnungen</div>
-        <h3>Zu wie vielen Personen<br />kommen Sie?</h3>
-        <p>Wir zeigen Ihnen die Wohnungen, die zu Ihnen passen.</p>
-        <div className="ss2-ask-grid">
-          {[1, 2, 3, 4].map((n) =>
-          <button key={n} onClick={() => setPersons(n)}>
-              <b>{n}</b><span>{n === 1 ? 'Person' : 'Personen'}</span>
-            </button>
-          )}
-        </div>
-      </div>}
-      {mode === 'unterkunft' && tab === 'wohnungen' && persons !== null && apt !== null && <SSAptScreen w={apt} onBack={() => setApt(null)} full={full} setFull={setFull} />}
-      {mode === 'unterkunft' && tab === 'wohnungen' && persons !== null && apt === null && <div className="ss2-scroll">
-        <div className="ss2-whead">
-          <div className="ss2-hand">{persons >= 4 ? 'Für Familien' : 'Passend für Sie'}</div>
-          <h3>Welche passt zu Ihnen?</h3>
-          <button className="ss2-persons" onClick={() => setPersons(null)}>{persons} {persons === 1 ? 'Person' : 'Personen'} · ändern</button>
-        </div>
-        <div className="ss2-wlist">
-          {window.LEOS_DATA.wohnungen.filter((w) => persons >= 4 ? (w.id === 'ifen' || w.id === 'himmeleck') : (w.id !== 'ifen' && w.id !== 'himmeleck')).map((w) =>
-          <button key={w.id} className="ss2-wcard" onClick={() => { if (SS_APT[w.id]) setApt(w); }}>
-              <span className="ss2-wcard-img"><img src={w.img} alt={"Wohnung " + w.name} /></span>
-              <span className="ss2-wcard-tx">
-                <span className="ss2-wcard-eyebrow">{w.eyebrow}</span>
-                <b>{w.name}</b>
-                <span className="ss2-wcard-tag">{w.tagline}</span>
-                <span className="ss2-wcard-meta">{w.meta}</span>
-              </span>
-              <span className="ss2-wcard-go">→</span>
-            </button>
-          )}
-        </div>
-      </div>}
-      {mode === 'stay' && <SSStay />}
-      {mode === 'tag' && <SSTag />}
-      {mode !== 'stay' && <div className="ss2-cta">
-        <div className="ss2-cta-meta"><b>ab 189 €</b><span>pro Nacht · inkl. Endreinigung</span></div>
-        <a href="#buchen" onClick={onClose}>Diese Wohnung buchen</a>
-      </div>}
-      {mode === 'stay' && <div className="ss2-cta">
-        <div className="ss2-cta-meta"><b>Fragen?</b><span>Wir sind jederzeit für Sie da</span></div>
-        <a href="tel:+4983226067370">Gastgeber anrufen</a>
-      </div>}
+      <div className="ss2-screen" key={stack.length + cur.k}>
+        {cur.k === 'ask' && <SSAsk onPick={(n) => { setPersons(n); push({ k: 'list' }); }} />}
+        {cur.k === 'list' && <SSList persons={persons} onChangePersons={back} onOpen={(w) => push({ k: 'apt', w })} />}
+        {cur.k === 'apt' && <SSAptScreen w={cur.w} full={full} setFull={setFull} onTag={() => push({ k: 'tag' })} />}
+        {cur.k === 'tag' && <SSTagList onPick={(i) => push({ k: 'day', i })} />}
+        {cur.k === 'day' && <SSTagDay p={SS_TAGE[cur.i]} />}
+      </div>
+      <div className="ss2-cta">
+        {cur.k === 'apt' ?
+        <div className="ss2-cta-meta"><b>{cur.w.name}</b><span>Verfügbarkeit &amp; Preise prüfen</span></div> :
+        <div className="ss2-cta-meta"><b>ab 189 €</b><span>pro Nacht · inkl. Endreinigung</span></div>}
+        <a href={window.LEOS_DATA.ctaBuchen.href} target="_blank" rel="noopener">{cur.k === 'apt' ? 'Diese Wohnung buchen' : 'Verfügbarkeit prüfen'}</a>
+      </div>
     </div>);
 }
 
