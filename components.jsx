@@ -211,7 +211,7 @@ function Intro() {
         <span className="bergbahn-pin-tape" aria-hidden="true"></span>
         <span className="bergbahn-pin-dot" aria-hidden="true"></span>
         <img src="img/bergbahn-unlimited.png" alt="Bergbahn Unlimited" />
-        <span className="bergbahn-pin-caption">Mai – Okt. <em>inklusive</em></span>
+        <span className="bergbahn-pin-caption">Von Mai bis Anfang November <em>inklusive</em></span>
       </a>
       <div className="container intro-grid">
         <div className="intro-text">

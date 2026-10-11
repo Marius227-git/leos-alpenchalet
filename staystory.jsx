@@ -1,6 +1,6 @@
 // StayStory — In-Page-App (v6: geführter Flow)
 const SS_HAUS = [
-  { ic: 'cablecar', label: 'Bergbahn inklusive', sub: 'Alle 8 Bahnen, Mai bis Oktober' },
+  { ic: 'cablecar', label: 'Bergbahn inklusive', sub: 'Alle 8 Bahnen, von Mai bis Anfang November' },
   { ic: 'bolt', label: 'E-Ladestation', sub: 'Direkt am Haus' },
   { ic: 'park', label: 'Parkplatz', sub: 'Am Haus, teils überdacht' },
   { ic: 'bike', label: 'Ski- & Fahrradraum', sub: 'Großer Schuppen am Haus' },
@@ -208,7 +208,7 @@ const SS_TAGE = [
     beats: [
       { ph: 'dawn', m: '360°', ic: 'sun', time: 'Morgens', h: 'Aufwachen', t: 'Sie wachen auf, kein Wecker. Der erste Kaffee auf dem Balkon, die Oberstdorfer Berge noch im Morgenlicht — und Sie wissen schon, wo es heute raufgeht.' },
       { ph: 'dawn', m: 'Foto', ic: 'coffee', time: 'Morgens', h: 'Frühstück', t: 'In Ruhe in Ihrer eigenen Küche, so früh oder spät Sie mögen. Heute brauchen Sie Kraft.' },
-      { ph: 'day', m: 'Foto', ic: 'cablecar', time: 'Vormittag', h: 'Aufbruch', t: 'Ihr Bergbahnticket liegt schon bereit — von Mai bis Oktober inklusive. Rauf mit der Bahn, und vor Ihnen öffnet sich der Grat.' },
+      { ph: 'day', m: 'Foto', ic: 'cablecar', time: 'Vormittag', h: 'Aufbruch', t: 'Ihr Bergbahnticket liegt schon bereit — von Mai bis Anfang November inklusive. Rauf mit der Bahn, und vor Ihnen öffnet sich der Grat.' },
       { ph: 'day', m: 'Video', ic: 'mountain', time: 'Mittags', h: 'Am Fellhorngrat', t: 'Links und rechts fällt die Welt ab, vor Ihnen Gipfel bis zum Horizont. Bei jedem Schritt genau der Blick, für den Sie gekommen sind.' },
       { ph: 'gold', m: 'Foto', ic: 'fork', time: 'Mittags', h: 'Brotzeit oben', t: 'Eine Pause am Grat, die Beine baumeln überm Tal, ein Stück Bergkäse. Niemand, der Sie drängt.' },
       { ph: 'gold', m: '360°', ic: 'drop', time: 'Nachmittag', h: 'Heimkehr & Dusche', t: 'Zurück im Chalet, müde Beine — und dann unter die Regendusche. Der erste richtig gute Moment des Feierabends.' },

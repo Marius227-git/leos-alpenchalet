@@ -22,7 +22,7 @@ window.LEOS_DATA = {
   trust: [
     { star: true, text: "9.6/10 aus 80 Bewertungen" },
     { text: "8 Min. mit dem Auto bis Oberstdorf-Zentrum" },
-    { text: "Bergbahn-Ticket Mai bis Oktober inklusive" },
+    { text: "Bergbahn-Ticket von Mai bis Anfang November inklusive" },
     { text: "Ruhige Lage am Ortsrand" },
     { text: "E-Auto-Ladestation am Haus" },
     { text: "Ski-Paradies um die Ecke" },
@@ -48,7 +48,7 @@ window.LEOS_DATA = {
 
   bergbahn: {
     caveat: "— im Übernachtungspreis bereits enthalten",
-    h3: "Bergbahn-Ticket Mai bis Oktober",
+    h3: "Bergbahn-Ticket von Mai bis Anfang November",
     text: "Alle 8 Bergbahnen in Oberstdorf und im Kleinwalsertal — unbegrenzt nutzbar während Ihres gesamten Aufenthalts. Fellhorn, Kanzelwand, Nebelhorn, Söllereck, Ifenbahn, Heubergbahn, Zaferne-Sesselbahn, Walmedingerhorn (im Sommer 2026 geschlossen): einsteigen, hochfahren, ganz bequem."
   },
 
@@ -133,7 +133,7 @@ window.LEOS_DATA = {
       { q: "Wann sind Check-in und Check-out?", a: "Check-in ist ab 16:00 Uhr möglich, Check-out bis 10:00 Uhr am Abreisetag. Wenn Sie früher ankommen oder später abreisen möchten, sprechen Sie uns an — meistens lässt sich das einrichten." },
       { q: "Sind Bettwäsche und Handtücher inklusive?", a: "Ja, vollständig. Bettwäsche, Bad- und Geschirrtücher sind in jeder Wohnung bei Anreise frisch bezogen — Sie brauchen nichts mitzubringen." },
       { q: "Sind Haustiere erlaubt?", a: "Hunde sind nach vorheriger Absprache willkommen. Bitte fragen Sie uns vor der Buchung kurz an, dann klären wir es gemeinsam." },
-      { q: "Wie funktioniert das Bergbahn-Ticket?", a: "Ihr Bergbahn-Ticket bekommen Sie bei uns am Tag der Ankunft per Mail. Es gilt von Anfang Mai bis Ende Oktober für alle 8 Bergbahnen in Oberstdorf und im Kleinwalsertal — unbegrenzt während Ihres Aufenthalts." }
+      { q: "Wie funktioniert das Bergbahn-Ticket?", a: "Ihr Bergbahn-Ticket bekommen Sie bei uns am Tag der Ankunft per Mail. Es gilt von Mai bis Anfang November für alle 8 Bergbahnen in Oberstdorf und im Kleinwalsertal — unbegrenzt während Ihres Aufenthalts." }
     ]
   }
 };
