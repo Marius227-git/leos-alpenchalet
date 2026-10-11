@@ -113,7 +113,7 @@ function SSAsk({ onPick }) {
   return (
     <div className="ss2-ask">
       <div className="ss2-hand">Herzlich willkommen</div>
-      <h3>Zu wie vielen<br />kommen Sie?</h3>
+      <h3>Zu wie vielen Personen<br />kommen Sie?</h3>
       <p>Wir zeigen Ihnen die Wohnungen, die zu Ihnen passen.</p>
       <div className="ss2-ask-grid">
         {[1, 2, 3, 4].map((n) =>
@@ -122,7 +122,7 @@ function SSAsk({ onPick }) {
           </button>
         )}
       </div>
-      <button className="ss2-skip" onClick={() => onPick(0)}>Erst mal alle Wohnungen ansehen</button>
+      <button className="ss2-skip" onClick={() => onPick(0)}>Erstmal alle Wohnungen ansehen</button>
     </div>);
 }
 
