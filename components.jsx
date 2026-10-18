@@ -732,18 +732,73 @@ function openStayStory(eye, title, mode) {
   window.dispatchEvent(new CustomEvent('staystory:open', { detail: { eye, title, mode } }));
 }
 
+const SS_TEASER_CLIPS = [
+  { id: '9b6e52e4-4dd4-45cd-a9ee-2cb51db04549', label: 'Wohnen' },
+  { id: 'b9c13145-f4d5-4ee2-b9f3-c95eed6f5794', label: 'Schlafen' },
+  { id: 'cca9b719-881c-419c-87dd-f5a61bd76fa4', label: 'Bad' },
+  { id: '8455a7ae-9a2f-42aa-8f83-374b1537ffea', label: 'Terrasse' }
+];
+const ssThumb = (id) => 'https://vz-824476f1-c1c.b-cdn.net/' + id + '/thumbnail.jpg';
+function TeaserClip({ id, active, shown, onPlaying }) {
+  const vRef = React.useRef(null);
+  React.useEffect(() => {
+    const v = vRef.current; if (!v) return;
+    const src = 'https://vz-824476f1-c1c.b-cdn.net/' + id + '/playlist.m3u8';
+    let h;
+    v.muted = true; v.defaultMuted = true; v.playsInline = true;
+    if (window.Hls && window.Hls.isSupported()) { h = new window.Hls({ capLevelToPlayerSize: true, maxBufferLength: 6 }); h.loadSource(src); h.attachMedia(v); }
+    else if (v.canPlayType('application/vnd.apple.mpegurl')) { v.src = src; }
+    return () => { if (h) h.destroy(); v.removeAttribute('src'); v.load(); };
+  }, [id]);
+  React.useEffect(() => {
+    const v = vRef.current; if (!v) return;
+    if (active) { try { v.currentTime = 0; } catch (e) {} const p = v.play(); if (p && p.catch) p.catch(() => {}); }
+    else { const t = setTimeout(() => v.pause(), 400); return () => clearTimeout(t); }
+  }, [active]);
+  return <video ref={vRef} className={"ss-card-vid" + (shown ? " on" : "")} muted loop playsInline preload="auto" onPlaying={() => { if (active) onPlaying(); }} aria-hidden="true"></video>;
+}
+
+const SS_CLIP_SEC = 2.4;
 function StayStoryTeaser() {
+  const [i, setI] = React.useState(0);
+  const [vis, setVis] = React.useState(false);
+  const [playing, setPlaying] = React.useState(false);
+  const [shown, setShown] = React.useState(-1);
+  const [bg, setBg] = React.useState(window.__ssTourBg || 'blur');
+  React.useEffect(() => { const f = (e) => setBg(e.detail); window.addEventListener('ss-tour-bg', f); return () => window.removeEventListener('ss-tour-bg', f); }, []);
+  const ref = React.useRef(null);
+  React.useEffect(() => {
+    const el = ref.current; if (!el || !window.IntersectionObserver) { setVis(true); return; }
+    const io = new IntersectionObserver(([e]) => setVis(e.isIntersecting), { rootMargin: '200px' });
+    io.observe(el); return () => io.disconnect();
+  }, []);
+  React.useEffect(() => { setPlaying(false); }, [i]);
+  React.useEffect(() => {
+    if (!vis) return;
+    const t = setTimeout(() => setI((n) => (n + 1) % SS_TEASER_CLIPS.length), playing ? SS_CLIP_SEC * 1000 : 6000);
+    return () => clearTimeout(t);
+  }, [i, vis, playing]);
+  const c = SS_TEASER_CLIPS[i];
   return (
-    <section className="ss-teaser" id="staystory" onClick={() => openStayStory('Dein Tag', 'So fühlt sich ein Tag bei uns an')}>
-      <StayPano frontFill="#3f5233" />
+    <section ref={ref} className={"ss-teaser ss-tour ss-tour-" + bg} id="staystory" onClick={() => openStayStory('Digitale Hausführung', 'Schauen Sie sich drinnen um')}>
+      <div className="ss-tour-bg" aria-hidden="true">
+        {SS_TEASER_CLIPS.map((x, n) => <img key={x.id} src={ssThumb(x.id)} alt="" className={n === i ? 'on' : ''} />)}
+      </div>
       <div className="container ss-teaser-inner">
         <div className="ss-teaser-txt">
-          <div className="ss-hand">Erlebe den Tag vorab</div>
-          <h2 className="ss-teaser-h">So fühlt sich ein Tag <em>bei uns</em> an</h2>
-          <p className="ss-teaser-sub">Die interaktive Hausführung: 360°-Blick in jede Wohnung, vom ersten Kaffee auf dem Balkon bis zum Sonnenuntergang über dem Ifen.</p>
-          <span className="ss-go">Tag erleben
+          <div className="ss-hand">Digitale Hausführung</div>
+          <h2 className="ss-teaser-h">Schauen Sie sich <em>drinnen</em> um</h2>
+          <p className="ss-teaser-sub">Die interaktive Hausführung: Kurze Videoclips mit Erklärung von jedem Bereich des Hauses.</p>
+          <span className="ss-go">Wohnungen erleben
             <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round"><path d="M5 12h14M13 6l6 6-6 6" /></svg>
           </span>
+        </div>
+        <div className="ss-card" aria-hidden="true">
+          <div className="ss-card-bars">{SS_TEASER_CLIPS.map((x, n) => <i key={x.id} className={n < i ? 'done' : n === i && playing ? 'cur' : ''} style={{ '--dur': SS_CLIP_SEC + 's' }}><b key={n === i ? 'a' + i + playing : 'b'}></b></i>)}</div>
+          {shown < 0 && <img className="ss-card-vid on" src={ssThumb(SS_TEASER_CLIPS[0].id)} alt="" />}
+          {vis && SS_TEASER_CLIPS.map((x, n) => <TeaserClip key={x.id} id={x.id} active={n === i} shown={n === shown} onPlaying={() => { setShown(n); setPlaying(true); }} />)}
+          <div className="ss-card-label">{c.label}</div>
+          <div className="ss-card-tap">Tippen zum Öffnen</div>
         </div>
       </div>
     </section>);
