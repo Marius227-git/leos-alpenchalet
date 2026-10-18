@@ -46,10 +46,30 @@ function HeroVideo() {
     const onPlay = () => setOn(true);
     v.muted = true; v.defaultMuted = true; v.playsInline = true;
     v.addEventListener('playing', onPlay); v.addEventListener('error', fail);
-    if (v.canPlayType('application/vnd.apple.mpegurl')) { v.src = src; go(); }
-    else if (window.Hls && window.Hls.isSupported()) { h = new window.Hls({ capLevelToPlayerSize: true }); h.loadSource(src); h.attachMedia(v); h.on(window.Hls.Events.MANIFEST_PARSED, go); h.on(window.Hls.Events.ERROR, (e, d) => { if (d.fatal) fail(); }); }
+    if (window.Hls && window.Hls.isSupported()) {
+      const H = window.Hls;
+      h = new H({ capLevelToPlayerSize: false, startLevel: -1, abrEwmaDefaultEstimate: 6000000, maxBufferLength: 20 });
+      let hd = 0, started = false;
+      h.on(H.Events.MANIFEST_PARSED, (e, d) => {
+        const lv = d.levels.map((l, i) => ({ i, hgt: Math.min(l.height || 0, l.width || 9999), w: l.width || 0, br: l.bitrate || 0 }));
+        const ok = lv.filter(l => l.w >= 1280 || l.hgt >= 720).sort((a, b) => a.br - b.br);
+        const top = lv.slice().sort((a, b) => b.br - a.br)[0];
+        const pick = ok.length ? ok[0] : top;
+        hd = pick.i;
+        h.config.minAutoBitrate = pick.br;
+        h.startLevel = (ok.length > 1 && !mob) ? ok[ok.length - 1].i : pick.i;
+        h.nextLevel = h.startLevel;
+      });
+      h.on(H.Events.FRAG_BUFFERED, (e, d) => {
+        if (started || !d.frag || d.frag.level < hd) return;
+        const b = v.buffered; if (b.length && b.end(b.length - 1) - v.currentTime >= 4) { started = true; go(); }
+      });
+      h.on(H.Events.ERROR, (e, d) => { if (d.fatal) fail(); });
+      h.loadSource(src); h.attachMedia(v);
+    }
+    else if (v.canPlayType('application/vnd.apple.mpegurl')) { v.src = src; v.addEventListener('canplaythrough', go, { once: true }); }
     else fail();
-    const retry = () => go();
+    const retry = () => { if (v.readyState >= 3) go(); };
     document.addEventListener('touchstart', retry, { once: true, passive: true });
     return () => { v.removeEventListener('playing', onPlay); v.removeEventListener('error', fail); document.removeEventListener('touchstart', retry); if (h) h.destroy(); v.removeAttribute('src'); v.load(); };
   }, [v0.id]);
@@ -57,7 +77,7 @@ function HeroVideo() {
     <div className="hero-vid" style={{ '--hr': v0.ratio }}>
       <img className="hero-vid-poster" key={v0.id} referrerPolicy="no-referrer" src={v0.poster} alt="Leos Alpenchalet aus der Luft, Tiefenbach bei Oberstdorf" />
       {fb && <iframe className={"hero-vid-iframe" + (on ? " on" : "")} src={'https://iframe.mediadelivery.net/embed/745048/' + v0.id + '?autoplay=true&loop=true&muted=true&preload=true&playsinline=true&responsive=false'} allow="autoplay; encrypted-media" title="Drohnenvideo" tabIndex="-1" aria-hidden="true"></iframe>}
-      <video ref={vRef} className={"hero-vid-video" + (on && !fb ? " on" : "")} style={fb ? { display: 'none' } : null} muted autoPlay loop playsInline preload="auto" poster={v0.poster} disablePictureInPicture aria-hidden="true"></video>
+      <video ref={vRef} className={"hero-vid-video" + (on && !fb ? " on" : "")} style={fb ? { display: 'none' } : null} muted loop playsInline preload="auto" poster={v0.poster} disablePictureInPicture aria-hidden="true"></video>
     </div>);
 }
 
