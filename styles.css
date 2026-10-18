@@ -520,6 +520,8 @@ button { font: inherit; }
 .lage-map iframe { width: 100%; height: 100%; border: 0; }
 .lage-map-canvas { width: 100%; height: 100%; }
 .lage-map .leaflet-container { font-family: inherit; }
+.lage-pin span{display:block;width:28px;height:28px;border-radius:50% 50% 50% 0;background:#4A5D3A;transform:rotate(-45deg);border:3px solid #fff;box-shadow:0 2px 6px rgba(0,0,0,.35);box-sizing:border-box}
+
 .lage-block { margin-bottom: 2rem; }
 .lage-block-h { font-family: var(--font-heading); font-size: 1.05rem; letter-spacing: -0.005em; margin: 0 0 0.6rem; font-weight: 400; }
 .lage-addr { font-family: var(--font-body); font-size: 1rem; line-height: 1.6; color: var(--color-text-primary); margin: 0; }
@@ -1417,3 +1419,11 @@ button { font: inherit; }
 .ss2-stage-video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;border:0;pointer-events:none;max-width:none;background:#1c1812}.ss2-stage-video.is-full{object-fit:contain}.ss2-stage-video::-webkit-media-controls{display:none!important}.ss2-stage-video::-webkit-media-controls-start-playback-button{display:none!important}
 .ss2-vidcover{position:absolute;inset:0;background-size:cover;background-repeat:no-repeat;background-position:center;background-color:#1c1812;transition:opacity .5s ease;pointer-events:none}
 .ss2-vidcover.gone{opacity:0}
+
+.hero-vid{position:absolute;inset:0;overflow:hidden;container-type:size;background:#1c1812}@media (max-width:720px){.hero-vid{--hero-zoom:1}}.hero-vid-poster,.hero-vid-video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block}.hero-vid-video,.hero-vid-iframe{opacity:0;transition:opacity .8s ease}.hero-vid-video.on,.hero-vid-iframe.on{opacity:1}.hero-vid-video::-webkit-media-controls{display:none!important}.hero-vid-iframe{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%) scale(var(--hero-zoom,1.35));border:0;pointer-events:none;max-width:none;width:max(100cqw,calc(100cqh * var(--hr)));height:max(100cqh,calc(100cqw / var(--hr)))}
+
+@media (min-width: 721px) { .hero-full { height: 56.25vw; min-height: 660px; max-height: none; } }
+
+.hero-vid-poster,.hero-vid-video{transform:scale(var(--hero-zoom,1.35))}
+
+.video-iframe{position:absolute;inset:0;width:100%;height:100%;border:0;display:block}

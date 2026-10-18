@@ -56,7 +56,7 @@ window.LEOS_DATA = {
     eyebrow: "Was unsere Gäste sagen",
     score: { value: "9.6", count: "73", label: "Außergewöhnlich", subs: "Sauberkeit 9.9 · Komfort 9.9 · Ausstattung 9.9" },
     categories: [
-      { label: "Hotelpersonal",            value: "9.8" },
+      { label: "Gastgeber",            value: "9.8" },
       { label: "Ausstattung",              value: "9.8" },
       { label: "Sauberkeit",               value: "10.0" },
       { label: "Komfort",                  value: "9.8" },

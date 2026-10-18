@@ -20,15 +20,53 @@ function Header() {
 
 }
 
+const HERO_VID = {
+  desk: { id: '4dd5f226-f072-44fb-9980-0574540f9f8f', poster: 'img/hero-thumb-desktop.jpg', ratio: 16 / 9 },
+  mob: { id: '0355befb-0ee0-4460-b92f-762ab00cea05', poster: 'img/hero-thumb-mobile.jpg', ratio: 4 / 3 }
+};
+function HeroVideo() {
+  const mq = '(max-width: 720px)';
+  const [mob, setMob] = React.useState(() => window.matchMedia(mq).matches);
+  const [on, setOn] = React.useState(false);
+  const [fb, setFb] = React.useState(false);
+  const vRef = React.useRef(null);
+  const v0 = mob ? HERO_VID.mob : HERO_VID.desk;
+  React.useEffect(() => {
+    const m = window.matchMedia(mq); const f = () => setMob(m.matches);
+    m.addEventListener ? m.addEventListener('change', f) : m.addListener(f);
+    return () => { m.removeEventListener ? m.removeEventListener('change', f) : m.removeListener(f); };
+  }, []);
+  React.useEffect(() => {
+    setOn(false); setFb(false);
+    const v = vRef.current; if (!v) return;
+    const src = 'https://vz-824476f1-c1c.b-cdn.net/' + v0.id + '/playlist.m3u8';
+    let h;
+    const fail = () => { if (h) { h.destroy(); h = null; } setFb(true); setTimeout(() => setOn(true), 1500); };
+    const go = () => { const p = v.play(); if (p && p.catch) p.catch(() => {}); };
+    const onPlay = () => setOn(true);
+    v.muted = true; v.defaultMuted = true; v.playsInline = true;
+    v.addEventListener('playing', onPlay); v.addEventListener('error', fail);
+    if (v.canPlayType('application/vnd.apple.mpegurl')) { v.src = src; go(); }
+    else if (window.Hls && window.Hls.isSupported()) { h = new window.Hls({ capLevelToPlayerSize: true }); h.loadSource(src); h.attachMedia(v); h.on(window.Hls.Events.MANIFEST_PARSED, go); h.on(window.Hls.Events.ERROR, (e, d) => { if (d.fatal) fail(); }); }
+    else fail();
+    const retry = () => go();
+    document.addEventListener('touchstart', retry, { once: true, passive: true });
+    return () => { v.removeEventListener('playing', onPlay); v.removeEventListener('error', fail); document.removeEventListener('touchstart', retry); if (h) h.destroy(); v.removeAttribute('src'); v.load(); };
+  }, [v0.id]);
+  return (
+    <div className="hero-vid" style={{ '--hr': v0.ratio }}>
+      <img className="hero-vid-poster" key={v0.id} referrerPolicy="no-referrer" src={v0.poster} alt="Leos Alpenchalet aus der Luft, Tiefenbach bei Oberstdorf" />
+      {fb && <iframe className={"hero-vid-iframe" + (on ? " on" : "")} src={'https://iframe.mediadelivery.net/embed/745048/' + v0.id + '?autoplay=true&loop=true&muted=true&preload=true&playsinline=true&responsive=false'} allow="autoplay; encrypted-media" title="Drohnenvideo" tabIndex="-1" aria-hidden="true"></iframe>}
+      <video ref={vRef} className={"hero-vid-video" + (on && !fb ? " on" : "")} style={fb ? { display: 'none' } : null} muted autoPlay loop playsInline preload="auto" poster={v0.poster} disablePictureInPicture aria-hidden="true"></video>
+    </div>);
+}
+
 function Hero() {
   const h = D.hero;
   return (
     <section className="hero hero-full" id="top">
       <div className="hero-bg">
-        <picture>
-          <source media="(max-width: 720px)" srcSet="img/hero-haus-mobile.jpg" />
-          <img src="img/hero-haus.jpg" alt="Leos Alpenchalet, Außenansicht in Tiefenbach" />
-        </picture>
+        <HeroVideo />
       </div>
       <div className="hero-overlay"></div>
       <div className="container hero-full-inner">
@@ -203,6 +241,21 @@ function Trust() {
 
 }
 
+function IntroVideo() {
+  const [play, setPlay] = React.useState(false);
+  return (
+    <div className="video-wrap">
+      {play ?
+        <iframe className="video-iframe" src="https://iframe.mediadelivery.net/embed/745048/0da19453-0314-4181-9b92-481dc180b182?autoplay=true&loop=false&muted=false&preload=true&playsinline=true&responsive=true" allow="accelerometer; gyroscope; autoplay; encrypted-media; picture-in-picture; fullscreen" allowFullScreen title="Drohnen-Video Leos Alpenchalet"></iframe> :
+        <React.Fragment>
+          <img src="img/intro-video-preview.jpg" alt="Standbild Drohnen-Video" />
+          <button className="play-button" aria-label="Drohnen-Video abspielen" onClick={() => setPlay(true)}>
+            <span className="play-circle">▶</span>
+          </button>
+        </React.Fragment>}
+    </div>);
+}
+
 function Intro() {
   const i = D.intro;
   return (
@@ -219,12 +272,7 @@ function Intro() {
           <h2 className="h2 h2-logo-green">{i.h2Pre}<em>{i.h2Italic}</em>{i.h2Post}</h2>
           <p style={{ whiteSpace: 'pre-line' }}>{i.text}</p>
         </div>
-        <div className="video-wrap">
-          <img src="img/intro-video-preview.jpg" alt="Standbild Drohnen-Video" />
-          <button className="play-button" aria-label="Drohnen-Video abspielen">
-            <span className="play-circle">▶</span>
-          </button>
-        </div>
+        <IntroVideo />
       </div>
     </section>);
 
@@ -498,17 +546,21 @@ function Lage() {
   React.useEffect(() => {
     let map;
     const fallback = [47.4203, 10.2464];
-    const build = (ll) => {
-      if (!mapRef.current || !window.L) return;
-      map = window.L.map(mapRef.current, { scrollWheelZoom: false, zoomControl: true }).setView(ll, 13);
-      window.L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 19, attribution: '© OpenStreetMap' }).addTo(map);
-      window.L.marker(ll).addTo(map).bindPopup('Leos Alpenchalet<br>Rohrmooser Straße 22');
-    };
+    let ro, marker, dead = false;
     const start = () => {
-      fetch('https://nominatim.openstreetmap.org/search?format=json&limit=1&street=Rohrmooser%20Stra%C3%9Fe%2022&city=Oberstdorf&postalcode=87561&country=Germany')
+      if (dead || !mapRef.current || !window.L || map) return;
+      map = window.L.map(mapRef.current, { scrollWheelZoom: false, zoomControl: true }).setView(fallback, 13);
+      window.L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}', { maxZoom: 19, attribution: 'Karte © Esri, HERE, Garmin, © OpenStreetMap' }).addTo(map);
+      const pin = window.L.divIcon({ className: 'lage-pin', html: '<span></span>', iconSize: [28, 28], iconAnchor: [14, 28], popupAnchor: [0, -26] });
+      marker = window.L.marker(fallback, { icon: pin }).addTo(map).bindPopup('Leos Alpenchalet<br>Rohrmooser Straße 22');
+      if (window.ResizeObserver) { ro = new ResizeObserver(() => map && map.invalidateSize()); ro.observe(mapRef.current); }
+      setTimeout(() => map && map.invalidateSize(), 300);
+      const ctl = window.AbortController ? new AbortController() : null;
+      if (ctl) setTimeout(() => ctl.abort(), 4000);
+      fetch('https://nominatim.openstreetmap.org/search?format=json&limit=1&street=Rohrmooser%20Stra%C3%9Fe%2022&city=Oberstdorf&postalcode=87561&country=Germany', ctl ? { signal: ctl.signal } : {})
         .then(r => r.json())
-        .then(d => build(d && d[0] ? [parseFloat(d[0].lat), parseFloat(d[0].lon)] : fallback))
-        .catch(() => build(fallback));
+        .then(d => { if (map && d && d[0]) { const ll = [parseFloat(d[0].lat), parseFloat(d[0].lon)]; map.setView(ll, 13); marker.setLatLng(ll); } })
+        .catch(() => {});
     };
     if (window.L) start();
     else {
@@ -517,9 +569,11 @@ function Lage() {
       document.head.appendChild(css);
       const s = document.createElement('script');
       s.src = 'https://unpkg.com/leaflet@1.9.4/dist/leaflet.js';
-      s.onload = start; document.head.appendChild(s);
+      s.onload = start;
+      s.onerror = () => { const s2 = document.createElement('script'); s2.src = 'https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.js'; s2.onload = start; document.head.appendChild(s2); const c2 = document.createElement('link'); c2.rel = 'stylesheet'; c2.href = 'https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.css'; document.head.appendChild(c2); };
+      document.head.appendChild(s);
     }
-    return () => { if (map) map.remove(); };
+    return () => { dead = true; if (ro) ro.disconnect(); if (map) map.remove(); };
   }, []);
   return (
     <section className="sec sec-altpapier" id="lage">
